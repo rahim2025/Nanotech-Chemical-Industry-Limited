@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAdminStore } from "../store/useAdminStore";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3 } from "lucide-react";
+import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 
 const AdminDashboard = () => {
@@ -302,15 +303,20 @@ const AdminDashboard = () => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {products.map((product) => (
-                                    <div key={product._id} className="card bg-base-100 shadow-xl border">
-                                        <figure className="h-48 overflow-hidden">
-                                            <img
-                                                src={product.photo || "/api/placeholder/400/300"}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover"
-                                            />
+                                    <div key={product._id} className="card bg-base-100 shadow-xl border">                                        <figure className="h-48 overflow-hidden">
+                                            <Link to={`/products/${product._id}`}>
+                                                <img
+                                                    src={product.photo || "/api/placeholder/400/300"}
+                                                    alt={product.name}
+                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+                                                />
+                                            </Link>
                                         </figure>                                        <div className="card-body">
-                                            <h2 className="card-title">{product.name}</h2>
+                                            <Link to={`/products/${product._id}`}>
+                                                <h2 className="card-title hover:text-primary transition-colors cursor-pointer">
+                                                    {product.name}
+                                                </h2>
+                                            </Link>
                                             <p className="text-sm text-base-content/70 line-clamp-2">
                                                 {product.description}
                                             </p>                                            {/* Pricing Information */}
@@ -326,12 +332,18 @@ const AdminDashboard = () => {
                                                     {formatPrice(product.price)}
                                                 </div>
                                             </div>
-                                            
-                                            <div className="flex items-center justify-between mt-4">
+                                              <div className="flex items-center justify-between mt-4">
                                                 <div className={`badge ${product.inStock ? 'badge-success' : 'badge-error'}`}>
                                                     {product.inStock ? 'In Stock' : 'Out of Stock'}
                                                 </div>
                                                 <div className="flex gap-2">
+                                                    <Link
+                                                        to={`/products/${product._id}`}
+                                                        className="btn btn-sm btn-primary"
+                                                        title="View Details"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </Link>
                                                     <button
                                                         onClick={() => setEditingProduct(product)}
                                                         className="btn btn-sm btn-warning"

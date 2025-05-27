@@ -151,16 +151,17 @@ const ProductsPage = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {products.map((product) => (
-                            <div key={product._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">                        {products.map((product) => (
+                            <div key={product._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 group">
                                 {/* Product Image */}
                                 <figure className="relative h-48 overflow-hidden">
-                                    <img
-                                        src={product.photo || "/api/placeholder/400/300"}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                                    />
+                                    <Link to={`/products/${product._id}`}>
+                                        <img
+                                            src={product.photo || "/api/placeholder/400/300"}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
+                                        />
+                                    </Link>
                                     
                                     {/* Stock Status Badge */}
                                     <div className="absolute top-3 right-3">
@@ -189,12 +190,13 @@ const ProductsPage = () => {
                                         </div>
                                     )}
                                 </figure>
-                                
-                                {/* Product Info */}
+                                  {/* Product Info */}
                                 <div className="card-body">
-                                    <h2 className="card-title text-lg font-semibold">
-                                        {product.name}
-                                    </h2>
+                                    <Link to={`/products/${product._id}`}>
+                                        <h2 className="card-title text-lg font-semibold hover:text-primary transition-colors cursor-pointer">
+                                            {product.name}
+                                        </h2>
+                                    </Link>
                                     <p className="text-base-content/70 text-sm line-clamp-3">
                                         {product.description}
                                     </p>
@@ -212,11 +214,13 @@ const ProductsPage = () => {
                                             {formatPrice(product.price)}
                                         </div>
                                     </div>
-                                    
-                                    <div className="card-actions justify-end mt-4">
-                                        <button className="btn btn-primary btn-sm">
+                                      <div className="card-actions justify-end mt-4">
+                                        <Link 
+                                            to={`/products/${product._id}`}
+                                            className="btn btn-primary btn-sm"
+                                        >
                                             View Details
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
