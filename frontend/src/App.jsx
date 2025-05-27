@@ -1,5 +1,6 @@
 import { Navigate, Route,Routes } from "react-router-dom"
 import { Navbar } from "./components/Navbar"
+import Footer from "./components/Footer"
 import  HomePage  from "./pages/HomePage"
 import { LoginPage } from "./pages/LoginPage"
 import { SignUpPage } from "./pages/SignupPage"
@@ -48,6 +49,8 @@ const App = () =>{
           authUser?.role === "admin" ? <InquiriesPage/> : <Navigate to = "/" />
         }/>
       </Routes>
+      
+      <Footer />
       
       <Toaster />
 

@@ -185,11 +185,6 @@ const AboutUsPage = () => {
           <div className="card-body text-center">
             <h2 className="card-title justify-center mb-2">Get in Touch With Us</h2>
             <p className="mb-4">Interested in our products? Have questions? We'd love to hear from you!</p>
-            <div className="card-actions justify-center">
-              <a href="mailto:purchase@nanotechcil.com" className="btn btn-outline btn-sm btn-wide">
-                Contact Us Now
-              </a>
-            </div>
           </div>
         </div>
       </div>

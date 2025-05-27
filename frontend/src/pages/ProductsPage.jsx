@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { Plus, Edit, Trash2, Package, MessageCircle } from "lucide-react";
+import { Plus, Edit, Trash2, Package, MessageCircle, Search } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import toast from "react-hot-toast";
 
@@ -11,10 +11,30 @@ const ProductsPage = () => {
     const { authUser } = useAuthStore();
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredProducts, setFilteredProducts] = useState([]);    useEffect(() => {
+        getAllProducts();
+    }, [getAllProducts]);
 
     useEffect(() => {
-        getAllProducts();
-    }, [getAllProducts]);    // Helper function to format pricing
+        if (!products) return;
+        
+        if (!searchTerm.trim()) {
+            setFilteredProducts(products);
+            return;
+        }
+        
+        const lowercaseSearchTerm = searchTerm.toLowerCase();
+        const filtered = products.filter(product => 
+            product.name.toLowerCase().includes(lowercaseSearchTerm) || 
+            (product.description && product.description.toLowerCase().includes(lowercaseSearchTerm)) ||
+            (product.category && product.category.toLowerCase().includes(lowercaseSearchTerm))
+        );
+        
+        setFilteredProducts(filtered);
+    }, [searchTerm, products]);
+
+    // Helper function to format pricing
     const formatPrice = (price) => {
         if (!price) return "Contact for pricing";
         
@@ -100,29 +120,59 @@ const ProductsPage = () => {
                             </div>
                         </div>
                     </div>
-                )}
-
-                {/* Header */}
-                <div className="flex justify-between items-center mb-8">
+                )}                {/* Header */}
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-base-content">Our Products</h1>
                         <p className="text-base-content/70 mt-2">
                             Discover our range of chemical products and solutions
                         </p>
+                        {searchTerm && (
+                            <div className="mt-2 text-sm">
+                                <span className="font-medium">
+                                    Found {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} 
+                                </span>
+                                <span className="text-base-content/70"> matching "</span>
+                                <span className="font-medium">{searchTerm}</span>
+                                <span className="text-base-content/70">"</span>
+                            </div>
+                        )}
                     </div>
                     
-                    {isAdmin && (
-                        <button
-                            onClick={() => setShowAddForm(true)}
-                            className="btn btn-primary gap-2"
-                        >
-                            <Plus size={20} />
-                            Add Product
-                        </button>
-                    )}
-                </div>
-
-                {/* Products Grid */}
+                    <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                        {/* Search Bar */}
+                        <div className="relative flex-1 md:w-64">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size={18} className="text-base-content/50" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="input input-bordered w-full pl-10 pr-4 py-2 text-sm focus:ring-primary focus:border-primary"
+                            />
+                            {searchTerm && (
+                                <button 
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onClick={() => setSearchTerm("")}
+                                >
+                                    <span className="text-base-content/50 hover:text-base-content">✕</span>
+                                </button>
+                            )}
+                        </div>
+                        
+                        {isAdmin && (
+                            <button
+                                onClick={() => setShowAddForm(true)}
+                                className="btn btn-primary gap-2"
+                            >
+                                <Plus size={20} />
+                                Add Product
+                            </button>
+                        )}
+                    </div>
+                </div>                {/* Products Grid */}
                 {products.length === 0 ? (
                     <div className="text-center py-16">
                         <Package size={64} className="mx-auto text-base-content/30 mb-4" />
@@ -147,8 +197,21 @@ const ProductsPage = () => {
                                 </Link>
                             </div>
                         )}                    </div>
+                ) : filteredProducts.length === 0 ? (
+                    <div className="text-center py-16">
+                        <Search size={64} className="mx-auto text-base-content/30 mb-4" />
+                        <h3 className="text-xl font-semibold text-base-content mb-2">
+                            No matching products found
+                        </h3>
+                        <p className="text-base-content/70 mb-6">
+                            Try different search terms or browse all products
+                        </p>
+                        <button onClick={() => setSearchTerm("")} className="btn btn-primary">
+                            Show All Products
+                        </button>
+                    </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">                        {products.map((product) => (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">                        {filteredProducts.map((product) => (
                             <div key={product._id} className="card bg-base-100 shadow-sm hover:shadow-md transition-all duration-300 group border border-base-200 rounded-xl overflow-hidden">
                                 {/* Product Image */}
                                 <figure className="relative h-28 overflow-hidden">
