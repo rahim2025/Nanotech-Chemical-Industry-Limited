@@ -55,13 +55,13 @@ export const Navbar = () => {
                 <Link to="/profile" className="btn btn-sm gap-2">
                   <User className="size-5" />
                   <span className="hidden sm:inline">Profile</span>
-                </Link>
-
-                {authUser.role === "admin" && (
-                  <Link to="/admin" className="btn btn-sm gap-2 btn-error">
-                    <Shield className="size-5" />
-                    <span className="hidden sm:inline">Admin</span>
-                  </Link>
+                </Link>                {authUser.role === "admin" && (
+                  <>
+                    <Link to="/admin" className="btn btn-sm gap-2 btn-error">
+                      <Shield className="size-5" />
+                      <span className="hidden sm:inline">Admin</span>
+                    </Link>
+                  </>
                 )}
 
                 <button className="btn btn-sm gap-2" onClick={logout}>

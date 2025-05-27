@@ -1,24 +1,87 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAdminStore } from "../store/useAdminStore";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye } from "lucide-react";
+import { useCommentStore } from "../store/useCommentStore";
+import { useNotificationStore } from "../store/useNotificationStore";
+import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
+import CommentItem from "../components/CommentItem";
 
 const AdminDashboard = () => {
-    const { users, isLoading, getAllUsers, promoteToAdmin, demoteToUser, deleteUser } = useAdminStore();
+    const location = useLocation();
+    const navigate = useNavigate();    const { users, isLoading, getAllUsers, promoteToAdmin, demoteToUser, deleteUser } = useAdminStore();
     const { products, getAllProducts, deleteProduct } = useProductStore();
     const { authUser } = useAuthStore();
+    const { 
+        comments, 
+        isLoading: isLoadingComments, 
+        getAllComments, 
+        deleteComment, 
+        replyToComment,
+        pagination: commentPagination 
+    } = useCommentStore();
+    
     const [filter, setFilter] = useState("all");
-    const [activeTab, setActiveTab] = useState("users");
+    
+    // Get tab from URL params or default to "users"
+    const searchParams = new URLSearchParams(location.search);
+    const tabFromUrl = searchParams.get('tab');
+    const [activeTab, setActiveTab] = useState(tabFromUrl || "users");
+    
     const [showAddProductForm, setShowAddProductForm] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
+    const [editingProduct, setEditingProduct] = useState(null);    const [commentFilter, setCommentFilter] = useState("all");
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [replyText, setReplyText] = useState("");
 
     useEffect(() => {
         getAllUsers();
         getAllProducts();
-    }, [getAllUsers, getAllProducts]);    // Helper function to format pricing
+        getAllComments();
+    }, [getAllUsers, getAllProducts, getAllComments]);
+
+    // Update active tab when URL changes
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tabFromUrl = searchParams.get('tab');
+        if (tabFromUrl && ['users', 'products', 'comments'].includes(tabFromUrl)) {
+            setActiveTab(tabFromUrl);
+        }
+    }, [location.search]);    // Handle tab change with URL update
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        const searchParams = new URLSearchParams(location.search);
+        searchParams.set('tab', tab);
+        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    };
+
+    // Comment management functions
+    const handleDeleteComment = async (commentId) => {
+        if (window.confirm("Are you sure you want to delete this comment? This action cannot be undone.")) {
+            await deleteComment(commentId);
+        }
+    };
+
+    const handleReplyToComment = async (commentId, replyText) => {
+        try {
+            await replyToComment(commentId, replyText);
+            setReplyingTo(null);
+            setReplyText("");
+        } catch (error) {
+            // Error is handled in the store
+        }
+    };
+
+    // Filter comments based on selected filter
+    const filteredComments = comments.filter(comment => {
+        if (commentFilter === "all") return true;
+        if (commentFilter === "replied") return comment.adminReply?.text;
+        if (commentFilter === "unreplied") return !comment.adminReply?.text;
+        if (commentFilter === "guests") return !comment.commenter;
+        if (commentFilter === "users") return comment.commenter;
+        return true;
+    });// Helper function to format pricing
     const formatPrice = (price) => {
         if (!price) return "Contact for pricing";
         
@@ -89,10 +152,10 @@ const AdminDashboard = () => {
         );
     }    return (
         <div className="container mx-auto p-6 min-h-screen bg-base-200 pt-20">
-            <div className="bg-base-100 rounded-lg shadow-lg p-6">
-                <div className="flex items-center gap-3 mb-6">
+            <div className="bg-base-100 rounded-lg shadow-lg p-6">                <div className="flex items-center gap-3 mb-6">
                     <Shield className="w-8 h-8 text-primary" />
                     <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                    
                 </div>
 
                 {/* Stats Cards */}
@@ -118,34 +181,43 @@ const AdminDashboard = () => {
                             {products.filter(p => p.inStock).length} in stock
                         </div>
                     </div>
-                    
-                    <div className="stat bg-accent text-accent-content rounded-lg">
+                      <div className="stat bg-accent text-accent-content rounded-lg">
                         <div className="stat-figure">
-                            <BarChart3 className="w-8 h-8" />
+                            <MessageCircle className="w-8 h-8" />
                         </div>
-                        <div className="stat-title text-accent-content/80">Stock Status</div>
-                        <div className="stat-value">
-                            {products.length > 0 ? Math.round((products.filter(p => p.inStock).length / products.length) * 100) : 0}%
+                        <div className="stat-title text-accent-content/80">Total Comments</div>
+                        <div className="stat-value">{comments.length}</div>
+                        <div className="stat-desc text-accent-content/60">
+                            {comments.filter(c => !c.adminReply?.text).length} pending replies
                         </div>
-                        <div className="stat-desc text-accent-content/60">Products in stock</div>
                     </div>
-                </div>
-
-                {/* Tab Navigation */}
+                </div>                {/* Tab Navigation */}
                 <div className="tabs tabs-boxed mb-6">
                     <button
-                        onClick={() => setActiveTab("users")}
+                        onClick={() => handleTabChange("users")}
                         className={`tab gap-2 ${activeTab === "users" ? "tab-active" : ""}`}
                     >
                         <Users className="w-4 h-4" />
                         User Management
                     </button>
                     <button
-                        onClick={() => setActiveTab("products")}
+                        onClick={() => handleTabChange("products")}
                         className={`tab gap-2 ${activeTab === "products" ? "tab-active" : ""}`}
                     >
                         <Package className="w-4 h-4" />
                         Product Management
+                    </button>
+                    <button
+                        onClick={() => handleTabChange("comments")}
+                        className={`tab gap-2 ${activeTab === "comments" ? "tab-active" : ""}`}
+                    >
+                        <MessageCircle className="w-4 h-4" />
+                        Comments Management
+                        {comments.filter(c => !c.adminReply?.text).length > 0 && (
+                            <div className="badge badge-error badge-sm">
+                                {comments.filter(c => !c.adminReply?.text).length}
+                            </div>
+                        )}
                     </button>
                 </div>
 
@@ -361,6 +433,244 @@ const AdminDashboard = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>                )}
+
+                {/* Comments Tab */}
+                {activeTab === "comments" && (
+                    <div>                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">Comments Management</h2>
+                            <div className="flex items-center gap-4">
+                               
+                                <div className="stats stats-horizontal">
+                                    <div className="stat">
+                                        <div className="stat-title">Total Comments</div>
+                                        <div className="stat-value text-lg">{comments.length}</div>
+                                    </div>
+                                    <div className="stat">
+                                        <div className="stat-title">Pending Replies</div>
+                                        <div className="stat-value text-lg text-warning">
+                                            {comments.filter(c => !c.adminReply?.text).length}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Comment Filter Controls */}
+                        <div className="flex gap-4 mb-6 flex-wrap">
+                            <button
+                                onClick={() => setCommentFilter("all")}
+                                className={`btn ${commentFilter === "all" ? "btn-primary" : "btn-outline"}`}
+                            >
+                                All Comments ({comments.length})
+                            </button>
+                            <button
+                                onClick={() => setCommentFilter("unreplied")}
+                                className={`btn ${commentFilter === "unreplied" ? "btn-primary" : "btn-outline"}`}
+                            >
+                                <MessageCircle className="w-4 h-4 mr-2" />
+                                Pending Replies ({comments.filter(c => !c.adminReply?.text).length})
+                            </button>
+                            <button
+                                onClick={() => setCommentFilter("replied")}
+                                className={`btn ${commentFilter === "replied" ? "btn-primary" : "btn-outline"}`}
+                            >
+                                <Reply className="w-4 h-4 mr-2" />
+                                Replied ({comments.filter(c => c.adminReply?.text).length})
+                            </button>
+                            <button
+                                onClick={() => setCommentFilter("guests")}
+                                className={`btn ${commentFilter === "guests" ? "btn-primary" : "btn-outline"}`}
+                            >
+                                <User className="w-4 h-4 mr-2" />
+                                Guest Users ({comments.filter(c => !c.commenter).length})
+                            </button>
+                            <button
+                                onClick={() => setCommentFilter("users")}
+                                className={`btn ${commentFilter === "users" ? "btn-primary" : "btn-outline"}`}
+                            >
+                                <Crown className="w-4 h-4 mr-2" />
+                                Registered Users ({comments.filter(c => c.commenter).length})
+                            </button>
+                        </div>
+
+                        {/* Comments List */}
+                        {isLoadingComments ? (
+                            <div className="flex justify-center items-center min-h-[400px]">
+                                <div className="loading loading-spinner loading-lg"></div>
+                            </div>
+                        ) : filteredComments.length === 0 ? (
+                            <div className="text-center py-16">
+                                <MessageCircle className="w-16 h-16 mx-auto text-base-300 mb-4" />
+                                <h3 className="text-xl font-semibold mb-2">No comments found</h3>
+                                <p className="text-base-content/60">
+                                    {commentFilter === "all" 
+                                        ? "No comments have been posted yet." 
+                                        : `No ${commentFilter} comments found.`
+                                    }
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {filteredComments.map((comment) => (
+                                    <div key={comment._id} className="bg-base-100 rounded-xl p-6 shadow-sm border border-base-300">
+                                        {/* Comment Header */}
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="avatar placeholder">
+                                                    <div className="bg-primary text-primary-content rounded-full w-10">
+                                                        <span className="text-sm">
+                                                            {comment.commenter 
+                                                                ? comment.commenter.fullName?.charAt(0) 
+                                                                : comment.commenterName?.charAt(0) || 'U'
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-semibold">
+                                                            {comment.commenter 
+                                                                ? comment.commenter.fullName 
+                                                                : comment.commenterName
+                                                            }
+                                                        </h4>
+                                                        {comment.commenter ? (
+                                                            <div className="badge badge-primary badge-sm">Registered User</div>
+                                                        ) : (
+                                                            <div className="badge badge-secondary badge-sm">Guest User</div>
+                                                        )}
+                                                        {!comment.adminReply?.text && (
+                                                            <div className="badge badge-warning badge-sm">
+                                                                <MessageCircle size={10} className="mr-1" />
+                                                                Needs Reply
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {/* Email and Product Info */}
+                                                    <div className="flex items-center gap-4 text-sm text-base-content/70 mt-1">
+                                                        <div className="flex items-center gap-1">
+                                                            <Mail size={12} className="text-primary" />
+                                                            <span className="font-mono text-xs bg-base-200 px-2 py-1 rounded">
+                                                                {comment.commenter 
+                                                                    ? comment.commenter.email 
+                                                                    : comment.email
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                        {comment.productId && (
+                                                            <div className="flex items-center gap-1">
+                                                                <Package size={12} className="text-secondary" />
+                                                                <span className="text-secondary font-medium">
+                                                                    {comment.productId.name}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-1">
+                                                            <Calendar size={12} />
+                                                            <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Actions */}
+                                            <div className="flex gap-2">
+                                                {!comment.adminReply?.text && (
+                                                    <button
+                                                        onClick={() => setReplyingTo(
+                                                            replyingTo === comment._id ? null : comment._id
+                                                        )}
+                                                        className="btn btn-sm btn-primary gap-2"
+                                                    >
+                                                        <Reply size={14} />
+                                                        Reply
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={() => handleDeleteComment(comment._id)}
+                                                    className="btn btn-sm btn-error btn-outline"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Comment Text */}
+                                        <div className="mb-4">
+                                            <p className="text-base-content/80 leading-relaxed whitespace-pre-wrap bg-base-200 p-4 rounded-lg">
+                                                {comment.commentText}
+                                            </p>
+                                        </div>
+
+                                        {/* Admin Reply */}
+                                        {comment.adminReply?.text && (
+                                            <div className="bg-primary/10 rounded-lg p-4 border-l-4 border-primary">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Shield size={16} className="text-primary" />
+                                                    <span className="font-semibold text-primary">Admin Reply</span>
+                                                    <span className="text-sm text-base-content/60">
+                                                        by {comment.adminReply.repliedBy?.fullName || 'Admin'}
+                                                    </span>
+                                                    <span className="text-sm text-base-content/60">•</span>
+                                                    <span className="text-sm text-base-content/60">
+                                                        {new Date(comment.adminReply.repliedAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                                <p className="text-base-content/80 leading-relaxed whitespace-pre-wrap">
+                                                    {comment.adminReply.text}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* Reply Form */}
+                                        {replyingTo === comment._id && !comment.adminReply?.text && (
+                                            <div className="mt-4 bg-base-200 rounded-lg p-4">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <Shield size={16} className="text-primary" />
+                                                    <span className="font-semibold text-primary">Reply as Admin</span>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <textarea
+                                                        value={replyText}
+                                                        onChange={(e) => setReplyText(e.target.value)}
+                                                        className="textarea textarea-bordered w-full"
+                                                        placeholder="Write your admin reply..."
+                                                        rows={3}
+                                                        maxLength={1000}
+                                                    />
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-sm text-base-content/60">
+                                                            {replyText.length}/1000
+                                                        </span>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setReplyingTo(null);
+                                                                    setReplyText("");
+                                                                }}
+                                                                className="btn btn-sm btn-outline"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleReplyToComment(comment._id, replyText)}
+                                                                className="btn btn-sm btn-primary gap-2"
+                                                                disabled={!replyText.trim()}
+                                                            >
+                                                                <Reply size={14} />
+                                                                Send Reply
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

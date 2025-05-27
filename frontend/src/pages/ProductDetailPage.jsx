@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
+import { useCommentStore } from "../store/useCommentStore";
 import { 
     ArrowLeft, 
     Package, 
@@ -16,21 +17,30 @@ import {
     XCircle
 } from "lucide-react";
 import toast from "react-hot-toast";
+import CommentForm from "../components/CommentForm";
+import CommentItem from "../components/CommentItem";
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
     const { getProductById, deleteProduct } = useProductStore();
     const { authUser } = useAuthStore();
+    const { 
+        comments, 
+        isLoading: isLoadingComments, 
+        pagination, 
+        getProductComments, 
+        clearComments 
+    } = useCommentStore();
     const [product, setProduct] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
+    const [isLoading, setIsLoading] = useState(true);    useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const productData = await getProductById(productId);
                 if (productData) {
                     setProduct(productData);
+                    // Load comments after product is loaded
+                    getProductComments(productId);
                 } else {
                     toast.error("Product not found");
                     navigate("/products");
@@ -47,7 +57,12 @@ const ProductDetailPage = () => {
         if (productId) {
             fetchProduct();
         }
-    }, [productId, getProductById, navigate]);
+
+        // Cleanup function to clear comments when leaving the page
+        return () => {
+            clearComments();
+        };
+    }, [productId, getProductById, navigate, getProductComments, clearComments]);
 
     // Helper function to format pricing
     const formatPrice = (price) => {
@@ -303,24 +318,61 @@ const ProductDetailPage = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Comments Section Placeholder */}
+                    </div>                    {/* Comments Section */}
                     <div className="mt-8">
                         <div className="bg-base-100 rounded-2xl shadow-xl p-8">
                             <div className="flex items-center gap-3 mb-6">
                                 <MessageCircle size={24} className="text-primary" />
                                 <h2 className="text-2xl font-bold">Comments & Reviews</h2>
+                                <div className="badge badge-primary badge-lg ml-auto">
+                                    {pagination.totalComments} Comments
+                                </div>
                             </div>
                             
-                            {/* Placeholder content */}
-                            <div className="text-center py-12">
-                                <MessageCircle size={48} className="mx-auto text-base-content/30 mb-4" />
-                                <h3 className="text-xl font-semibold mb-2">Comments Coming Soon</h3>
-                                <p className="text-base-content/70">
-                                    The comment section will be implemented in the next step. 
-                                    Users will be able to leave reviews and feedback about this product.
-                                </p>
+                            {/* Comment Form */}
+                            <CommentForm productId={productId} />
+                            
+                            {/* Comments List */}
+                            <div className="space-y-6">
+                                {isLoadingComments ? (
+                                    <div className="flex justify-center py-8">
+                                        <span className="loading loading-spinner loading-lg"></span>
+                                    </div>
+                                ) : comments.length > 0 ? (
+                                    <>
+                                        {comments.map((comment) => (
+                                            <CommentItem key={comment._id} comment={comment} />
+                                        ))}
+                                        
+                                        {/* Load More Button */}
+                                        {pagination.hasMore && (
+                                            <div className="flex justify-center pt-6">
+                                                <button
+                                                    onClick={() => getProductComments(productId, pagination.currentPage + 1)}
+                                                    className="btn btn-outline btn-primary"
+                                                    disabled={isLoadingComments}
+                                                >
+                                                    {isLoadingComments ? (
+                                                        <>
+                                                            <span className="loading loading-spinner loading-sm"></span>
+                                                            Loading...
+                                                        </>
+                                                    ) : (
+                                                        'Load More Comments'
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <MessageCircle size={48} className="mx-auto text-base-content/30 mb-4" />
+                                        <h3 className="text-xl font-semibold mb-2">No Comments Yet</h3>
+                                        <p className="text-base-content/70">
+                                            Be the first to share your thoughts about this product!
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
