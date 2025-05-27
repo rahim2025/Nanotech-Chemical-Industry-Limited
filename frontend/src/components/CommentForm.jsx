@@ -64,33 +64,31 @@ const CommentForm = ({ productId }) => {
             ...prev,
             [name]: value
         }));
-    };
-
-    return (
-        <div className="bg-base-200 rounded-xl p-6 mb-6">
-            <div className="flex items-center gap-3 mb-4">
-                <MessageCircle size={20} className="text-primary" />
-                <h3 className="text-lg font-semibold">
+    };    return (
+        <div className="bg-base-200/50 rounded-lg p-4 mb-5 border border-base-300/50">
+            <div className="flex items-center gap-2 mb-3">
+                <MessageCircle size={16} className="text-primary" />
+                <h3 className="text-base font-semibold">
                     {authUser ? "Leave a Comment" : "Share Your Thoughts"}
                 </h3>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
                 {/* User info for non-logged-in users */}
                 {!authUser && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Your Name *</span>
+                            <label className="label py-1">
+                                <span className="label-text text-sm">Your Name *</span>
                             </label>
                             <div className="relative">
-                                <User size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
+                                <User size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
                                 <input
                                     type="text"
                                     name="commenterName"
                                     value={formData.commenterName}
                                     onChange={handleInputChange}
-                                    className="input input-bordered w-full pl-10"
+                                    className="input input-bordered input-sm w-full pl-10"
                                     placeholder="Enter your name"
                                     disabled={isSubmitting}
                                     required
@@ -99,17 +97,17 @@ const CommentForm = ({ productId }) => {
                         </div>
                         
                         <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Your Email *</span>
+                            <label className="label py-1">
+                                <span className="label-text text-sm">Your Email *</span>
                             </label>
                             <div className="relative">
-                                <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
+                                <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
                                 <input
                                     type="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="input input-bordered w-full pl-10"
+                                    className="input input-bordered input-sm w-full pl-10"
                                     placeholder="Enter your email"
                                     disabled={isSubmitting}
                                     required
@@ -121,24 +119,24 @@ const CommentForm = ({ productId }) => {
                 
                 {/* Logged-in user info display */}
                 {authUser && (
-                    <div className="flex items-center gap-3 p-3 bg-base-100 rounded-lg">
+                    <div className="flex items-center gap-2 p-2 bg-base-100/70 rounded border border-base-300/50">
                         <div className="avatar placeholder">
-                            <div className="bg-primary text-primary-content rounded-full w-8">
-                                <span className="text-sm">{authUser.fullName?.charAt(0) || 'U'}</span>
+                            <div className="bg-primary text-primary-content rounded-full w-6 h-6">
+                                <span className="text-xs">{authUser.fullName?.charAt(0) || 'U'}</span>
                             </div>
                         </div>
                         <div>
-                            <p className="font-medium">{authUser.fullName}</p>
-                            <p className="text-sm text-base-content/60">{authUser.email}</p>
+                            <p className="font-medium text-sm">{authUser.fullName}</p>
+                            <p className="text-xs text-base-content/60">{authUser.email}</p>
                         </div>
                     </div>
                 )}
                 
                 {/* Comment text */}
                 <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Your Comment *</span>
-                        <span className="label-text-alt text-base-content/60">
+                    <label className="label py-1">
+                        <span className="label-text text-sm">Your Comment *</span>
+                        <span className="label-text-alt text-xs text-base-content/60">
                             {formData.commentText.length}/1000
                         </span>
                     </label>
@@ -146,7 +144,7 @@ const CommentForm = ({ productId }) => {
                         name="commentText"
                         value={formData.commentText}
                         onChange={handleInputChange}
-                        className="textarea textarea-bordered min-h-[100px] resize-y"
+                        className="textarea textarea-bordered textarea-sm min-h-[80px] resize-y text-sm"
                         placeholder="Share your thoughts about this product..."
                         disabled={isSubmitting}
                         maxLength={1000}
@@ -155,36 +153,33 @@ const CommentForm = ({ productId }) => {
                 </div>
                 
                 {/* Submit button */}
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                    {/* Info message for non-logged users */}
+                    {!authUser && (
+                        <div className="text-xs text-base-content/60 max-w-xs">
+                            <strong>Note:</strong> Email won't be displayed publicly.
+                        </div>
+                    )}
+                    
                     <button
                         type="submit"
-                        className="btn btn-primary gap-2"
+                        className="btn btn-primary btn-sm gap-2 ml-auto"
                         disabled={isSubmitting || !formData.commentText.trim()}
                     >
                         {isSubmitting ? (
                             <>
-                                <span className="loading loading-spinner loading-sm"></span>
+                                <span className="loading loading-spinner loading-xs"></span>
                                 Submitting...
                             </>
                         ) : (
                             <>
-                                <Send size={18} />
+                                <Send size={14} />
                                 Post Comment
                             </>
                         )}
                     </button>
                 </div>
             </form>
-            
-            {/* Info message for non-logged users */}
-            {!authUser && (
-                <div className="alert alert-info mt-4">
-                    <div className="text-sm">
-                        <strong>Note:</strong> Your email will not be displayed publicly. 
-                        It's only used for notifications if we reply to your comment.
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

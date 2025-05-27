@@ -64,15 +64,17 @@ const ProductsPage = () => {
     if (isLoading) {
         return (
             <div className="min-h-screen bg-base-200 pt-20">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[...Array(8)].map((_, i) => (
-                            <div key={i} className="card bg-base-100 shadow-xl animate-pulse">
-                                <div className="h-48 bg-base-300 rounded-t-2xl"></div>
-                                <div className="card-body">
-                                    <div className="h-6 bg-base-300 rounded mb-2"></div>
-                                    <div className="h-4 bg-base-300 rounded mb-2"></div>
-                                    <div className="h-4 bg-base-300 rounded w-3/4"></div>
+                <div className="container mx-auto px-4">                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                        {[...Array(12)].map((_, i) => (
+                            <div key={i} className="card bg-base-100 shadow-sm animate-pulse rounded-xl overflow-hidden">
+                                <div className="h-28 bg-base-300"></div>
+                                <div className="card-body p-2.5">
+                                    <div className="h-3 bg-base-300 rounded mb-1"></div>
+                                    <div className="h-2 bg-base-300 rounded mb-2"></div>
+                                    <div className="h-2 bg-base-300 rounded w-3/4 mb-2"></div>
+                                    <div className="h-8 bg-base-300 rounded mb-1"></div>
+                                    <div className="h-4 bg-base-300 rounded w-1/2"></div>
                                 </div>
                             </div>
                         ))}
@@ -94,10 +96,6 @@ const ProductsPage = () => {
                                 <h3 className="font-bold">Welcome to our Chemical Products Catalog!</h3>
                                 <div className="text-sm">
                                     Browse our products freely. 
-                                    <Link to="/signup" className="link link-primary ml-1">Create an account</Link> 
-                                    or 
-                                    <Link to="/login" className="link link-primary ml-1">sign in</Link> 
-                                    to access more features.
                                 </div>
                             </div>
                         </div>
@@ -148,13 +146,12 @@ const ProductsPage = () => {
                                     Create Account
                                 </Link>
                             </div>
-                        )}
-                    </div>
+                        )}                    </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">                        {products.map((product) => (
-                            <div key={product._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">                        {products.map((product) => (
+                            <div key={product._id} className="card bg-base-100 shadow-sm hover:shadow-md transition-all duration-300 group border border-base-200 rounded-xl overflow-hidden">
                                 {/* Product Image */}
-                                <figure className="relative h-48 overflow-hidden">
+                                <figure className="relative h-28 overflow-hidden">
                                     <Link to={`/products/${product._id}`}>
                                         <img
                                             src={product.photo || "/api/placeholder/400/300"}
@@ -162,64 +159,56 @@ const ProductsPage = () => {
                                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
                                         />
                                     </Link>
-                                    
-                                    {/* Stock Status Badge */}
-                                    <div className="absolute top-3 right-3">
-                                        <div className={`badge ${product.inStock ? 'badge-success' : 'badge-error'} text-white`}>
+                                      {/* Stock Status Badge */}
+                                    <div className="absolute top-1.5 right-1.5">
+                                        <div className={`badge badge-xs ${product.inStock ? 'badge-success' : 'badge-error'} text-white text-[10px] px-1`}>
                                             {product.inStock ? 'In Stock' : 'Out of Stock'}
                                         </div>
                                     </div>
 
                                     {/* Admin Actions */}
                                     {isAdmin && (
-                                        <div className="absolute top-3 left-3 flex gap-2">
+                                        <div className="absolute top-1.5 left-1.5 flex gap-1">
                                             <button
                                                 onClick={() => setEditingProduct(product)}
-                                                className="btn btn-sm btn-circle btn-warning"
+                                                className="btn btn-xs btn-circle btn-warning h-5 w-5 min-h-5"
                                                 title="Edit Product"
                                             >
-                                                <Edit size={14} />
+                                                <Edit size={8} />
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteProduct(product._id)}
-                                                className="btn btn-sm btn-circle btn-error"
+                                                className="btn btn-xs btn-circle btn-error h-5 w-5 min-h-5"
                                                 title="Delete Product"
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={8} />
                                             </button>
                                         </div>
                                     )}
                                 </figure>
-                                  {/* Product Info */}
-                                <div className="card-body">
+                                    {/* Product Info */}
+                                <div className="card-body p-2.5">
                                     <Link to={`/products/${product._id}`}>
-                                        <h2 className="card-title text-lg font-semibold hover:text-primary transition-colors cursor-pointer">
+                                        <h2 className="card-title text-xs font-semibold hover:text-primary transition-colors cursor-pointer line-clamp-2 leading-tight mb-1">
                                             {product.name}
                                         </h2>
                                     </Link>
-                                    <p className="text-base-content/70 text-sm line-clamp-3">
+                                    <p className="text-base-content/70 text-[10px] line-clamp-2 mb-2 leading-tight">
                                         {product.description}
                                     </p>
-                                      {/* Pricing Information */}
-                                    <div className="mt-3 p-3 bg-base-200 rounded-lg border border-base-300">
-                                        <div className="text-sm text-base-content/60 uppercase tracking-wide mb-1">Price</div>
-                                        <div className="text-lg font-bold" style={{ 
-                                            color: '#0d47a1', 
-                                            textShadow: '0px 0px 1px rgba(0,0,0,0.1)',
-                                            backgroundColor: 'rgba(255,255,255,0.7)',
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            display: 'inline-block'
-                                        }}>
+                                        {/* Pricing Information */}
+                                    <div className="mt-1 p-1.5 bg-base-200/50 rounded-lg border border-base-300/50">
+                                        <div className="text-[9px] text-base-content/60 uppercase tracking-wide mb-0.5 font-medium">Price</div>
+                                        <div className="text-xs font-bold text-primary">
                                             {formatPrice(product.price)}
                                         </div>
                                     </div>
-                                      <div className="card-actions justify-end mt-4">
+                                        <div className="card-actions justify-end mt-1.5">
                                         <Link 
                                             to={`/products/${product._id}`}
-                                            className="btn btn-primary btn-sm"
+                                            className="btn btn-primary btn-xs text-[10px] h-6 px-2 rounded-md"
                                         >
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </div>

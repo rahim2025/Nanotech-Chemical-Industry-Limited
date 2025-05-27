@@ -24,45 +24,50 @@ export const useAuthStore = create((set) =>({
         try {
             const res = await axiosInstance.post("/auth/signup",data);
             set({authUser:res.data})
-            toast.success("Account created successfully")        } catch (error) {
+            toast.success("Account created successfully")     
+        } catch (error) {
             console.log("Error in signup auth",error)
-            toast.error(error.response?.data?.message || "Signup failed")
+            toast.error(error.response.data.message)
         }finally {
             set({ isSigningUp: false });
           }
 
 
     },
-    isLoggingIn:false,    login: async(data)=>{
+    isLoggingIn:false,
+    login: async(data)=>{
         set({isLoggingIn:true});
         try {
-            const res = await axiosInstance.post("/auth/login",data);
-            set({authUser:res.data});
+            const res = await axiosInstance.post("/auth/login",data)
+            set({authUser:res.data})
             toast.success("Logged in successfully");
         } catch (error) {
-            console.log("Error in login:", error);
-            toast.error(error.response?.data?.message || "Login failed");
+        toast.error(error.response.data.message)
         }finally{
             set({isLoggingIn:false});
         }
-    },    logout: async() =>{
+       
+    },
+    logout: async() =>{
         try {
             const res = await axiosInstance.post("/auth/logout");
             set({authUser:null});
             toast.success("Logout successfully");   
         } catch (error) {
-            console.log("Error in logout:", error);
-            toast.error(error.response?.data?.message || "Logout failed");
+            console.log("Error in signup auth",error)
+            toast.error(error.response.data.errors)
         }
+        
     },
     updateProfile: async (data) => {
         set({ isUpdatingProfile: true });
         try {
           const res = await axiosInstance.put("/auth/update-profile", data);
           set({ authUser: res.data });
-          toast.success("Profile updated successfully");        } catch (error) {
+          toast.success("Profile updated successfully");
+        } catch (error) {
           console.log("error in update profile:", error);
-          toast.error(error.response?.data?.message || "Update profile failed");
+          toast.error(error.response.data.message);
         } finally {
           set({ isUpdatingProfile: false });
         }

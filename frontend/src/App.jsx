@@ -8,6 +8,7 @@ import { ProfilePage } from "./pages/ProfilePage"
 import AdminDashboard from "./pages/AdminDashboard"
 import ProductsPage from "./pages/ProductsPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
+import AboutUsPage from "./pages/AboutUsPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
 import { Loader } from "lucide-react"
@@ -30,12 +31,14 @@ const App = () =>{
       <Navbar />
       
       <Routes>
-        <Route path="/" element={authUser ? <HomePage/> : <Navigate to = "/products" /> }/>
+        <Route path="/" element={<ProductsPage/>}/>
+        <Route path="/home" element={<HomePage/>}/>
+        <Route path="/about" element={<AboutUsPage/>}/>
         <Route path="/login" element={!authUser? <LoginPage/> : <Navigate to= "/" />}/>
         <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to = "/"/> }/>
         <Route path="/settings" element={<SettingsPage/>}/>
-        <Route path="/profile" element={authUser ? <ProfilePage/> : <Navigate to = "/login"/>}/>
-        <Route path="/products" element={<ProductsPage/>}/>
+        <Route path="/profile" element={<ProfilePage/>}/>
+        <Route path="/products" element={<Navigate to= "/" />}/> {/* Redirect /products to / */}
         <Route path="/products/:productId" element={<ProductDetailPage/>}/>
         <Route path="/admin" element={
           authUser?.role === "admin" ? <AdminDashboard/> : <Navigate to = "/" />

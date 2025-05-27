@@ -43,12 +43,11 @@ const ProductDetailPage = () => {
                     getProductComments(productId);
                 } else {
                     toast.error("Product not found");
-                    navigate("/products");
+                    navigate("/");
                 }
-            } catch (error) {
-                console.error("Error fetching product:", error);
+            } catch (error) {                console.error("Error fetching product:", error);
                 toast.error("Failed to load product");
-                navigate("/products");
+                navigate("/");
             } finally {
                 setIsLoading(false);
             }
@@ -100,10 +99,9 @@ const ProductDetailPage = () => {
 
     const handleDeleteProduct = async () => {
         if (window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
-            try {
-                await deleteProduct(product._id);
+            try {                await deleteProduct(product._id);
                 toast.success("Product deleted successfully");
-                navigate("/products");
+                navigate("/");
             } catch (error) {
                 console.error("Error deleting product:", error);
                 toast.error("Failed to delete product");
@@ -139,16 +137,18 @@ const ProductDetailPage = () => {
         return (
             <div className="min-h-screen bg-base-200 pt-20">
                 <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto">
-                        {/* Loading skeleton */}
+                    <div className="max-w-6xl mx-auto">                        {/* Loading skeleton */}
                         <div className="animate-pulse">
-                            <div className="h-8 bg-base-300 rounded mb-8 w-32"></div>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div className="h-96 bg-base-300 rounded-2xl"></div>
-                                <div className="space-y-4">
-                                    <div className="h-8 bg-base-300 rounded"></div>
-                                    <div className="h-6 bg-base-300 rounded w-3/4"></div>
-                                    <div className="h-32 bg-base-300 rounded"></div>
+                            <div className="h-6 bg-base-300 rounded mb-6 w-32"></div>
+                            <div className="bg-base-100 rounded-xl shadow-lg overflow-hidden">
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                                    <div className="h-80 bg-base-300"></div>
+                                    <div className="lg:col-span-2 p-6 space-y-4">
+                                        <div className="h-6 bg-base-300 rounded"></div>
+                                        <div className="h-4 bg-base-300 rounded w-3/4"></div>
+                                        <div className="h-20 bg-base-300 rounded"></div>
+                                        <div className="h-16 bg-base-300 rounded"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -167,8 +167,7 @@ const ProductDetailPage = () => {
                         <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
                         <p className="text-base-content/70 mb-6">
                             The product you're looking for doesn't exist or has been removed.
-                        </p>
-                        <Link to="/products" className="btn btn-primary">
+                        </p>                        <Link to="/" className="btn btn-primary">
                             <ArrowLeft size={20} />
                             Back to Products
                         </Link>
@@ -178,14 +177,12 @@ const ProductDetailPage = () => {
         );
     }
 
-    return (
-        <div className="min-h-screen bg-base-200 pt-20">
+    return (        <div className="min-h-screen bg-base-200 pt-20">
             <div className="container mx-auto px-4 pb-8">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-5xl mx-auto">
                     {/* Navigation */}
-                    <div className="flex items-center justify-between mb-8">
-                        <button
-                            onClick={() => navigate("/products")}
+                    <div className="flex items-center justify-between mb-8">                        <button
+                            onClick={() => navigate("/")}
                             className="btn btn-ghost gap-2"
                         >
                             <ArrowLeft size={20} />
@@ -220,58 +217,56 @@ const ProductDetailPage = () => {
                                 </>
                             )}
                         </div>
-                    </div>
-
-                    {/* Product Details */}
-                    <div className="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                            {/* Product Image */}
-                            <div className="relative">
+                    </div>                    {/* Product Details */}
+                    <div className="bg-base-100 rounded-xl shadow-lg overflow-hidden">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                            {/* Product Image - More Compact */}
+                            <div className="relative lg:col-span-1">
                                 <img
-                                    src={product.photo || "/api/placeholder/600/600"}
+                                    src={product.photo || "/api/placeholder/400/400"}
                                     alt={product.name}
-                                    className="w-full h-full object-cover min-h-[400px] lg:min-h-[600px]"
+                                    className="w-full h-full object-cover min-h-[280px] lg:min-h-[320px] max-h-[400px]"
                                 />
                                 
                                 {/* Stock Status Badge */}
-                                <div className="absolute top-4 right-4">
-                                    <div className={`badge ${product.inStock ? 'badge-success' : 'badge-error'} gap-2 text-white`}>
-                                        {product.inStock ? <CheckCircle size={14} /> : <XCircle size={14} />}
+                                <div className="absolute top-3 right-3">
+                                    <div className={`badge ${product.inStock ? 'badge-success' : 'badge-error'} badge-sm gap-1 text-white`}>
+                                        {product.inStock ? <CheckCircle size={12} /> : <XCircle size={12} />}
                                         {product.inStock ? 'In Stock' : 'Out of Stock'}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Product Information */}
-                            <div className="p-8 lg:p-12">
-                                <div className="space-y-6">
+                            {/* Product Information - Takes more space */}
+                            <div className="p-6 lg:p-8 lg:col-span-2">
+                                <div className="space-y-5">
                                     {/* Product Title */}
                                     <div>
-                                        <h1 className="text-3xl lg:text-4xl font-bold text-base-content mb-4">
+                                        <h1 className="text-2xl lg:text-3xl font-bold text-base-content mb-3">
                                             {product.name}
                                         </h1>
                                         
                                         {/* Creator Info */}
-                                        <div className="flex items-center gap-3 text-base-content/70">
-                                            <User size={16} />
+                                        <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                            <User size={14} />
                                             <span>Created by {product.createdBy?.fullName || 'Unknown'}</span>
                                             <span>•</span>
-                                            <Calendar size={16} />
+                                            <Calendar size={14} />
                                             <span>{new Date(product.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </div>
 
                                     {/* Pricing */}
-                                    <div className="bg-base-200 rounded-xl p-6 border border-base-300">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <Package size={20} className="text-primary" />
-                                            <h3 className="text-lg font-semibold">Pricing Information</h3>
+                                    <div className="bg-base-200/50 rounded-lg p-4 border border-base-300/50">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Package size={16} className="text-primary" />
+                                            <h3 className="text-base font-semibold">Pricing Information</h3>
                                         </div>
-                                        <div className="text-2xl lg:text-3xl font-bold text-primary">
+                                        <div className="text-xl lg:text-2xl font-bold text-primary">
                                             {formatPrice(product.price)}
                                         </div>
                                         {product.price?.unit && !product.price?.contactForPrice && (
-                                            <div className="text-sm text-base-content/60 mt-1">
+                                            <div className="text-xs text-base-content/60 mt-1">
                                                 Price per {product.price.unit}
                                             </div>
                                         )}
@@ -279,38 +274,38 @@ const ProductDetailPage = () => {
 
                                     {/* Description */}
                                     <div>
-                                        <h3 className="text-xl font-semibold mb-4">Product Description</h3>
+                                        <h3 className="text-lg font-semibold mb-3">Product Description</h3>
                                         <div className="prose prose-sm max-w-none text-base-content/80">
-                                            <p className="whitespace-pre-wrap leading-relaxed">
+                                            <p className="whitespace-pre-wrap leading-relaxed text-sm">
                                                 {product.description}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="pt-6 space-y-4">
+                                    <div className="pt-4 space-y-3">
                                         {product.price?.contactForPrice ? (
-                                            <button className="btn btn-primary btn-lg w-full gap-2">
-                                                <MessageCircle size={20} />
+                                            <button className="btn btn-primary w-full gap-2">
+                                                <MessageCircle size={18} />
                                                 Contact for Pricing
                                             </button>
                                         ) : (
-                                            <button className="btn btn-primary btn-lg w-full gap-2">
-                                                <MessageCircle size={20} />
+                                            <button className="btn btn-primary w-full gap-2">
+                                                <MessageCircle size={18} />
                                                 Request Quote
                                             </button>
                                         )}
                                         
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <button className="btn btn-outline gap-2">
-                                                <Star size={18} />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button className="btn btn-outline btn-sm gap-2">
+                                                <Star size={16} />
                                                 Add to Favorites
                                             </button>
                                             <button 
                                                 onClick={handleShare}
-                                                className="btn btn-outline gap-2"
+                                                className="btn btn-outline btn-sm gap-2"
                                             >
-                                                <Share2 size={18} />
+                                                <Share2 size={16} />
                                                 Share Product
                                             </button>
                                         </div>
@@ -319,12 +314,12 @@ const ProductDetailPage = () => {
                             </div>
                         </div>
                     </div>                    {/* Comments Section */}
-                    <div className="mt-8">
-                        <div className="bg-base-100 rounded-2xl shadow-xl p-8">
-                            <div className="flex items-center gap-3 mb-6">
-                                <MessageCircle size={24} className="text-primary" />
-                                <h2 className="text-2xl font-bold">Comments & Reviews</h2>
-                                <div className="badge badge-primary badge-lg ml-auto">
+                    <div className="mt-6">
+                        <div className="bg-base-100 rounded-xl shadow-lg p-6">
+                            <div className="flex items-center gap-3 mb-5">
+                                <MessageCircle size={20} className="text-primary" />
+                                <h2 className="text-xl font-bold">Comments & Reviews</h2>
+                                <div className="badge badge-primary ml-auto">
                                     {pagination.totalComments} Comments
                                 </div>
                             </div>

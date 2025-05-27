@@ -78,46 +78,44 @@ const CommentItem = ({ comment }) => {
             hour: '2-digit',
             minute: '2-digit'
         });
-    };
-
-    return (
-        <div className="bg-base-100 rounded-xl p-6 shadow-sm border border-base-300">
+    };    return (
+        <div className="bg-base-100 rounded-lg p-4 shadow-sm border border-base-300/50 hover:shadow-md transition-shadow duration-200">
             {/* Comment Header */}
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
+            <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2.5">
                     <div className="avatar placeholder">
-                        <div className="bg-primary text-primary-content rounded-full w-10">
-                            <span className="text-sm">
+                        <div className="bg-primary text-primary-content rounded-full w-8 h-8">
+                            <span className="text-xs font-medium">
                                 {comment.commenter 
                                     ? comment.commenter.fullName?.charAt(0) 
                                     : comment.commenterName?.charAt(0) || 'U'
                                 }
                             </span>
                         </div>
-                    </div>                    <div>                        <div className="flex items-center gap-2">
-                            <h4 className="font-semibold">
+                    </div>                    <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="font-medium text-sm">
                                 {comment.commenter 
                                     ? comment.commenter.fullName 
                                     : comment.commenterName
                                 }
                             </h4>
                             {comment.commenter ? (
-                                <div className="badge badge-primary badge-sm">Registered User</div>
+                                <div className="badge badge-primary badge-xs">Registered</div>
                             ) : (
-                                <div className="badge badge-secondary badge-sm">Guest User</div>
+                                <div className="badge badge-secondary badge-xs">Guest</div>
                             )}
                             {isAdmin && (
-                                <div className="badge badge-info badge-sm">
-                                    <Shield size={10} className="mr-1" />
-                                    Admin View
+                                <div className="badge badge-info badge-xs gap-1">
+                                    <Shield size={8} />
+                                    Admin
                                 </div>
                             )}
                         </div>                        {/* Email display for admins */}
                         {isAdmin && (
-                            <div className="flex items-center gap-2 text-sm text-base-content/70 mb-1">
-                                <Mail size={14} className="text-primary" />
-                                <span className="font-medium">Email: </span>
-                                <span className="text-base-content/80 font-mono text-xs bg-base-200 px-2 py-1 rounded">
+                            <div className="flex items-center gap-2 text-xs text-base-content/70 mt-1">
+                                <Mail size={12} className="text-primary" />
+                                <span className="font-mono text-[10px] bg-base-200 px-1.5 py-0.5 rounded">
                                     {comment.commenter 
                                         ? comment.commenter.email 
                                         : comment.email
@@ -130,11 +128,10 @@ const CommentItem = ({ comment }) => {
                                                 ? comment.commenter.email 
                                                 : comment.email
                                         )}
-                                        className="btn btn-xs btn-ghost gap-1 hover:bg-primary hover:text-primary-content"
-                                        title="Copy email to clipboard"
+                                        className="btn btn-xs btn-ghost p-1 h-5 min-h-5 gap-1 hover:bg-primary hover:text-primary-content"
+                                        title="Copy email"
                                     >
-                                        <Copy size={12} />
-                                        Copy
+                                        <Copy size={10} />
                                     </button>
                                     <button
                                         onClick={() => handleSendEmail(
@@ -145,18 +142,17 @@ const CommentItem = ({ comment }) => {
                                                 ? comment.commenter.fullName 
                                                 : comment.commenterName
                                         )}
-                                        className="btn btn-xs btn-outline btn-primary gap-1"
-                                        title="Send email to commenter"
+                                        className="btn btn-xs btn-outline btn-primary p-1 h-5 min-h-5 gap-1"
+                                        title="Send email"
                                     >
-                                        <Send size={12} />
-                                        Email
-                                    </button>
+                                        <Send size={10} />
+                                                                            </button>
                                 </div>
                             </div>
                         )}
                         
-                        <div className="flex items-center gap-2 text-sm text-base-content/60">
-                            <Calendar size={14} />
+                        <div className="flex items-center gap-1.5 text-xs text-base-content/60 mt-1">
+                            <Calendar size={11} />
                             <span>{formatDate(comment.createdAt)}</span>
                         </div>
                     </div>
@@ -164,49 +160,47 @@ const CommentItem = ({ comment }) => {
                 
                 {/* Admin actions */}
                 {isAdmin && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                         <button
                             onClick={() => setShowReplyForm(!showReplyForm)}
-                            className="btn btn-sm btn-outline gap-2"
+                            className="btn btn-xs btn-outline gap-1"
                             title="Reply as Admin"
                         >
-                            <Reply size={14} />
+                            <Reply size={12} />
                             Reply
                         </button>
                         <button
                             onClick={handleDelete}
-                            className="btn btn-sm btn-error btn-outline"
+                            className="btn btn-xs btn-error btn-outline"
                             title="Delete Comment"
                         >
-                            <Trash2 size={14} />
+                            <Trash2 size={12} />
                         </button>
                     </div>
                 )}
             </div>
 
             {/* Comment Text */}
-            <div className="mb-4">
-                <p className="text-base-content/80 leading-relaxed whitespace-pre-wrap">
+            <div className="mb-3">
+                <p className="text-base-content/80 leading-relaxed whitespace-pre-wrap text-sm">
                     {comment.commentText}
                 </p>
-            </div>
-
-            {/* Admin Reply */}
+            </div>            {/* Admin Reply */}
             {comment.adminReply?.text && (
-                <div className="bg-base-200 rounded-lg p-4 border-l-4 border-primary">
+                <div className="bg-base-200/70 rounded-lg p-3 border-l-3 border-primary">
                     <div className="flex items-center gap-2 mb-2">
-                        <Shield size={16} className="text-primary" />
-                        <span className="font-semibold text-primary">Admin Reply</span>
-                        <span className="text-sm text-base-content/60">
+                        <Shield size={14} className="text-primary" />
+                        <span className="font-medium text-primary text-sm">Admin Reply</span>
+                        <span className="text-xs text-base-content/60">
                             by {comment.adminReply.repliedBy?.fullName || 'Admin'}
                         </span>
-                        <span className="text-sm text-base-content/60">•</span>
-                        <div className="flex items-center gap-1 text-sm text-base-content/60">
-                            <Clock size={12} />
+                        <span className="text-xs text-base-content/60">•</span>
+                        <div className="flex items-center gap-1 text-xs text-base-content/60">
+                            <Clock size={10} />
                             <span>{formatDate(comment.adminReply.repliedAt)}</span>
                         </div>
                     </div>
-                    <p className="text-base-content/80 leading-relaxed whitespace-pre-wrap">
+                    <p className="text-base-content/80 leading-relaxed whitespace-pre-wrap text-sm">
                         {comment.adminReply.text}
                     </p>
                 </div>
@@ -214,24 +208,23 @@ const CommentItem = ({ comment }) => {
 
             {/* Reply Form for Admins */}
             {isAdmin && showReplyForm && !comment.adminReply?.text && (
-                <div className="mt-4 bg-base-200 rounded-lg p-4">
-                    <form onSubmit={handleReply} className="space-y-3">
+                <div className="mt-3 bg-base-200/50 rounded-lg p-3 border border-base-300/50">
+                    <form onSubmit={handleReply} className="space-y-2.5">
                         <div className="flex items-center gap-2 mb-2">
-                            <Shield size={16} className="text-primary" />
-                            <span className="font-semibold text-primary">Reply as Admin</span>
+                            <Shield size={14} className="text-primary" />
+                            <span className="font-medium text-primary text-sm">Reply as Admin</span>
                         </div>
                         <textarea
                             value={replyText}
                             onChange={(e) => setReplyText(e.target.value)}
-                            className="textarea textarea-bordered w-full"
+                            className="textarea textarea-bordered textarea-sm w-full min-h-[70px]"
                             placeholder="Write your admin reply..."
-                            rows={3}
                             maxLength={1000}
                             disabled={isSubmittingReply}
                             required
                         />
                         <div className="flex justify-between items-center">
-                            <span className="text-sm text-base-content/60">
+                            <span className="text-xs text-base-content/60">
                                 {replyText.length}/1000
                             </span>
                             <div className="flex gap-2">
@@ -241,24 +234,24 @@ const CommentItem = ({ comment }) => {
                                         setShowReplyForm(false);
                                         setReplyText("");
                                     }}
-                                    className="btn btn-sm btn-outline"
+                                    className="btn btn-xs btn-outline"
                                     disabled={isSubmittingReply}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="btn btn-sm btn-primary gap-2"
+                                    className="btn btn-xs btn-primary gap-1"
                                     disabled={isSubmittingReply || !replyText.trim()}
                                 >
                                     {isSubmittingReply ? (
                                         <>
-                                            <span className="loading loading-spinner loading-sm"></span>
+                                            <span className="loading loading-spinner loading-xs"></span>
                                             Sending...
                                         </>
                                     ) : (
                                         <>
-                                            <Send size={14} />
+                                            <Send size={12} />
                                             Send Reply
                                         </>
                                     )}
