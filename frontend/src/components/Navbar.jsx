@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LogOut, MessageSquare, Settings, User, Shield } from "lucide-react";
+import { LogOut, MessageSquare, Settings, User, Shield, Package } from "lucide-react";
 
 export const Navbar = () => {
   const { logout, authUser } = useAuthStore();
@@ -19,37 +19,65 @@ export const Navbar = () => {
               </div>
               <h1 className="text-lg font-bold">Chatty</h1>
             </Link>
+            
+            {/* Always visible navigation */}
+            <nav className="hidden md:flex items-center gap-4">
+              <Link
+                to="/products"
+                className="btn btn-sm btn-ghost gap-2"
+              >
+                <Package className="w-4 h-4" />
+                Products
+              </Link>
+            </nav>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Mobile Products link */}
             <Link
-              to={"/settings"}
-              className={`
-              btn btn-sm gap-2 transition-colors
-              
-              `}
+              to="/products"
+              className="btn btn-sm gap-2 md:hidden"
             >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </Link>            {authUser && (
+              <Package className="w-4 h-4" />
+              <span className="hidden sm:inline">Products</span>
+            </Link>
+
+            {authUser ? (
               <>
-                <Link to={"/profile"} className={`btn btn-sm gap-2`}>
+                <Link
+                  to="/settings"
+                  className="btn btn-sm gap-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="hidden sm:inline">Settings</span>
+                </Link>
+
+                <Link to="/profile" className="btn btn-sm gap-2">
                   <User className="size-5" />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
 
                 {authUser.role === "admin" && (
-                  <Link to={"/admin"} className={`btn btn-sm gap-2 btn-error`}>
+                  <Link to="/admin" className="btn btn-sm gap-2 btn-error">
                     <Shield className="size-5" />
                     <span className="hidden sm:inline">Admin</span>
                   </Link>
                 )}
 
-                <button className="flex gap-2 items-center" onClick={logout}>
+                <button className="btn btn-sm gap-2" onClick={logout}>
                   <LogOut className="size-5" />
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login" className="btn btn-sm btn-primary">
+                  Login
+                </Link>
+                <Link to="/signup" className="btn btn-sm btn-outline">
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -57,4 +85,5 @@ export const Navbar = () => {
     </header>
   );
 };
+
 export default Navbar;

@@ -5,6 +5,7 @@ import cors from "cors"
 
 import authRouter from "./routers/auth.router.js"
 import adminRouter from "./routers/admin.router.js"
+import productRouter from "./routers/product.router.js"
 import {connectDB} from "./lib/db.js"
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(cors({
 
 app.use("/api/auth",authRouter)
 app.use("/api/admin",adminRouter)
+app.use("/api/products",productRouter)
 
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");

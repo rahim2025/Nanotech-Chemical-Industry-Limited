@@ -6,6 +6,7 @@ import { SignUpPage } from "./pages/SignupPage"
 import { SettingsPage } from "./pages/SettingsPage"
 import { ProfilePage } from "./pages/ProfilePage"
 import AdminDashboard from "./pages/AdminDashboard"
+import ProductsPage from "./pages/ProductsPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
 import { Loader } from "lucide-react"
@@ -28,11 +29,12 @@ const App = () =>{
       <Navbar />
       
       <Routes>
-        <Route path="/" element={authUser ? <HomePage/> : <Navigate to = "/login" /> }/>
+        <Route path="/" element={authUser ? <HomePage/> : <Navigate to = "/products" /> }/>
         <Route path="/login" element={!authUser? <LoginPage/> : <Navigate to= "/" />}/>
         <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to = "/"/> }/>
         <Route path="/settings" element={<SettingsPage/>}/>
         <Route path="/profile" element={authUser ? <ProfilePage/> : <Navigate to = "/login"/>}/>
+        <Route path="/products" element={<ProductsPage/>}/>
         <Route path="/admin" element={
           authUser?.role === "admin" ? <AdminDashboard/> : <Navigate to = "/" />
         }/>
