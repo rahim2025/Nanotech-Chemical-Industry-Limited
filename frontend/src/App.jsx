@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard"
 import ProductsPage from "./pages/ProductsPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
 import AboutUsPage from "./pages/AboutUsPage"
+import InquiriesPage from "./pages/InquiriesPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
 import { Loader } from "lucide-react"
@@ -42,6 +43,9 @@ const App = () =>{
         <Route path="/products/:productId" element={<ProductDetailPage/>}/>
         <Route path="/admin" element={
           authUser?.role === "admin" ? <AdminDashboard/> : <Navigate to = "/" />
+        }/>
+        <Route path="/admin/inquiries" element={
+          authUser?.role === "admin" ? <InquiriesPage/> : <Navigate to = "/" />
         }/>
       </Routes>
       

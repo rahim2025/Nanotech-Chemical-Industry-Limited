@@ -14,11 +14,13 @@ import {
     Edit,
     Trash2,
     CheckCircle,
-    XCircle
+    XCircle,
+    Mail
 } from "lucide-react";
 import toast from "react-hot-toast";
 import CommentForm from "../components/CommentForm";
 import CommentItem from "../components/CommentItem";
+import ProductInquiryForm from "../components/ProductInquiryForm";
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
@@ -31,9 +33,10 @@ const ProductDetailPage = () => {
         pagination, 
         getProductComments, 
         clearComments 
-    } = useCommentStore();
-    const [product, setProduct] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);    useEffect(() => {
+    } = useCommentStore();    const [product, setProduct] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showInquiryForm, setShowInquiryForm] = useState(false);
+    useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const productData = await getProductById(productId);
@@ -280,17 +283,22 @@ const ProductDetailPage = () => {
                                                 {product.description}
                                             </p>
                                         </div>
-                                    </div>
-
+                                    </div>                                    
                                     {/* Action Buttons */}
                                     <div className="pt-4 space-y-3">
                                         {product.price?.contactForPrice ? (
-                                            <button className="btn btn-primary w-full gap-2">
-                                                <MessageCircle size={18} />
+                                            <button 
+                                                onClick={() => setShowInquiryForm(true)} 
+                                                className="btn btn-primary w-full gap-2"
+                                            >
+                                                <Mail size={18} />
                                                 Contact for Pricing
                                             </button>
                                         ) : (
-                                            <button className="btn btn-primary w-full gap-2">
+                                            <button 
+                                                onClick={() => setShowInquiryForm(true)}
+                                                className="btn btn-primary w-full gap-2"
+                                            >
                                                 <MessageCircle size={18} />
                                                 Request Quote
                                             </button>
@@ -313,7 +321,20 @@ const ProductDetailPage = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>                    {/* Comments Section */}
+                    </div>                    {/* Inquiry Form Modal */}
+                    {showInquiryForm && (
+                        <div className="modal modal-open">
+                            <div className="modal-box max-w-2xl">
+                                <ProductInquiryForm 
+                                    product={product} 
+                                    onClose={() => setShowInquiryForm(false)} 
+                                />
+                            </div>
+                            <div className="modal-backdrop" onClick={() => setShowInquiryForm(false)}></div>
+                        </div>
+                    )}
+
+                    {/* Comments Section */}
                     <div className="mt-6">
                         <div className="bg-base-100 rounded-xl shadow-lg p-6">
                             <div className="flex items-center gap-3 mb-5">

@@ -80,7 +80,7 @@ const AboutUsPage = () => {
               <div className="flex items-start gap-3 mt-4">
                 <MapPin className="text-primary shrink-0 mt-1" />
                 <p className="text-base-content/80">
-                  RM. 505, No.-2 Building, Shanxi Tower, No.-5 Yaoquan Street, 
+                  RM. 502, No.-2 Building, Shanxi Tower, No.-5 Yaoquan Street, 
                   Yuexiu District, Guangzhou City, China
                 </p>
               </div>
@@ -144,35 +144,35 @@ const AboutUsPage = () => {
                 <div className="flex items-center gap-3">
                   <Mail className="text-primary shrink-0" />
                   <a href="mailto:purchase@nanotechcil.com" className="hover:text-primary">
-                    purchase@nanotechcil.com
+                    purchase@nanotechchemical.com
                   </a>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Mail className="text-primary shrink-0" />
                   <a href="mailto:export@nanotechcil.com" className="hover:text-primary">
-                    export@nanotechcil.com
+                    export@nanotechchemical.com
                   </a>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Mail className="text-primary shrink-0" />
                   <a href="mailto:nanotechcn@hotmail.com" className="hover:text-primary">
-                    nanotechcn@hotmail.com
+                    nanotechchemical@hotmail.com
                   </a>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Mail className="text-primary shrink-0" />
                   <a href="mailto:nanotechcil@hotmail.com" className="hover:text-primary">
-                    nanotechcil@hotmail.com
+                    nanotechchemical@hotmail.com
                   </a>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Globe className="text-primary shrink-0" />
-                  <a href="http://www.nanotechcil.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-                    www.nanotechcil.com
+                  <a href="http://www.nanotechchemical.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+                    www.nanotechchemical.com
                   </a>
                 </div>
               </div>

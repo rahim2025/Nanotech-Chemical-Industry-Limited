@@ -27,11 +27,11 @@ const AdminDashboard = () => {
     
     // Get tab from URL params or default to "users"
     const searchParams = new URLSearchParams(location.search);
-    const tabFromUrl = searchParams.get('tab');
-    const [activeTab, setActiveTab] = useState(tabFromUrl || "users");
+    const tabFromUrl = searchParams.get('tab');    const [activeTab, setActiveTab] = useState(tabFromUrl || "users");
     
     const [showAddProductForm, setShowAddProductForm] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);    const [commentFilter, setCommentFilter] = useState("all");
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [commentFilter, setCommentFilter] = useState("all");
     const [replyingTo, setReplyingTo] = useState(null);
     const [replyText, setReplyText] = useState("");
 
@@ -39,16 +39,14 @@ const AdminDashboard = () => {
         getAllUsers();
         getAllProducts();
         getAllComments();
-    }, [getAllUsers, getAllProducts, getAllComments]);
-
-    // Update active tab when URL changes
+    }, [getAllUsers, getAllProducts, getAllComments]);    // Update active tab when URL changes
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tabFromUrl = searchParams.get('tab');
-        if (tabFromUrl && ['users', 'products', 'comments'].includes(tabFromUrl)) {
+        if (tabFromUrl && ['users', 'products', 'comments', 'inquiries'].includes(tabFromUrl)) {
             setActiveTab(tabFromUrl);
         }
-    }, [location.search]);    // Handle tab change with URL update
+    }, [location.search]);// Handle tab change with URL update
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         const searchParams = new URLSearchParams(location.search);
@@ -206,8 +204,7 @@ const AdminDashboard = () => {
                     >
                         <Package className="w-4 h-4" />
                         Product Management
-                    </button>
-                    <button
+                    </button>                    <button
                         onClick={() => handleTabChange("comments")}
                         className={`tab gap-2 ${activeTab === "comments" ? "tab-active" : ""}`}
                     >
@@ -219,6 +216,13 @@ const AdminDashboard = () => {
                             </div>
                         )}
                     </button>
+                    <Link
+                        to="/admin/inquiries"
+                        className="tab gap-2"
+                    >
+                        <Mail className="w-4 h-4" />
+                        Product Inquiries
+                    </Link>
                 </div>
 
                 {/* Users Tab */}

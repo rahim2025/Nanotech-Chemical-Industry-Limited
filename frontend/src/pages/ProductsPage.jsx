@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { Plus, Edit, Trash2, Package } from "lucide-react";
+import { Plus, Edit, Trash2, Package, MessageCircle } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import toast from "react-hot-toast";
 
@@ -185,8 +185,7 @@ const ProductsPage = () => {
                                             </button>
                                         </div>
                                     )}
-                                </figure>
-                                    {/* Product Info */}
+                                </figure>                                    {/* Product Info */}
                                 <div className="card-body p-2.5">
                                     <Link to={`/products/${product._id}`}>
                                         <h2 className="card-title text-xs font-semibold hover:text-primary transition-colors cursor-pointer line-clamp-2 leading-tight mb-1">
@@ -203,12 +202,19 @@ const ProductsPage = () => {
                                             {formatPrice(product.price)}
                                         </div>
                                     </div>
-                                        <div className="card-actions justify-end mt-1.5">
-                                        <Link 
+                                    <div className="flex items-center justify-between mt-1.5">                                        {/* Comment Feature Indicator */}
+                                        <div className="flex items-center text-[9px]">
+                                            <div className="tooltip tooltip-top" data-tip="Reviews & Comments Available">
+                                                <span className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 hover:bg-primary/20 transition-all duration-300 group-hover:scale-105">
+                                                    <MessageCircle size={10} className="text-primary animate-pulse" />
+                                                    Reviews
+                                                </span>
+                                            </div>
+                                        </div>                                        <Link 
                                             to={`/products/${product._id}`}
                                             className="btn btn-primary btn-xs text-[10px] h-6 px-2 rounded-md"
                                         >
-                                            View
+                                            View Details
                                         </Link>
                                     </div>
                                 </div>
