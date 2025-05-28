@@ -6,7 +6,10 @@ const getApiUrl = () => {
     
     // If we're on the production site
     if (hostname === 'www.nanotechchemical.com' || hostname === 'nanotechchemical.com') {
-        return 'http://31.97.49.55:5000/api';  // Use the server IP in production
+        // Use HTTPS and the proper API subdomain in production
+        return 'https://api.nanotechchemical.com/api';
+        // Fallback to direct IP if needed
+        // return 'https://31.97.49.55:5000/api';
     }
     
     // For local development
