@@ -16,7 +16,6 @@ import {connectDB} from "./lib/db.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 dotenv.config();
 const app = express();
 
@@ -25,8 +24,25 @@ app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true,
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl requests)
+        if(!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            "http://31.97.49.55:5173", 
+            "http://localhost:5173", 
+            "http://www.nanotechchemical.com",
+            "https://www.nanotechchemical.com"
+        ];
+        
+        if(allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            console.log("Origin blocked by CORS:", origin);
+            callback(null, true); // Temporarily allow all origins while debugging
+        }
+    },
+    credentials: true
 }))
 
 // Serve static files from uploads directory
@@ -58,12 +74,8 @@ app.use("/api/comments",commentRouter)
 app.use("/api/inquiries",inquiryRouter)
 app.use("/api/notifications",notificationRouter)
 
-app.get("/", (req, res) => {
-  res.send("🚀 Backend is live!");
-});
 
-
-app.listen(5000, '0.0.0.0', () => {
+app.listen(5000, () => {
     console.log("Server is running on port 5000");
     connectDB();
 });
