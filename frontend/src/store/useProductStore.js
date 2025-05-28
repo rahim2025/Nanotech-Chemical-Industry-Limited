@@ -19,13 +19,15 @@ export const useProductStore = create((set, get) => ({
         } finally {
             set({ isLoading: false });
         }
-    },
-
-    // Create product (admin only)
+    },    // Create product (admin only)
     createProduct: async (productData) => {
         set({ isCreating: true });
         try {
-            const res = await axiosInstance.post("/products", productData);
+            const res = await axiosInstance.post("/products", productData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             
             // Add the new product to the local state
             const products = get().products;
@@ -52,12 +54,14 @@ export const useProductStore = create((set, get) => ({
             toast.error(error.response?.data?.message || "Failed to fetch product");
             return null;
         }
-    },
-
-    // Update product (admin only)
+    },    // Update product (admin only)
     updateProduct: async (productId, productData) => {
         try {
-            const res = await axiosInstance.put(`/products/${productId}`, productData);
+            const res = await axiosInstance.put(`/products/${productId}`, productData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             
             // Update the product in local state
             const products = get().products;

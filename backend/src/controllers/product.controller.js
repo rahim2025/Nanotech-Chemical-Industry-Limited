@@ -1,39 +1,51 @@
 import Product from "../models/product.model.js";
-import cloudinary from "../lib/cloudinary.js";
+import fileService from "../lib/fileService.js";
 
 export const createProduct = async (req, res) => {
-    try {        const { name, photo, description, inStock, price } = req.body;
+    try {
+        const { name, description, inStock } = req.body;
         const userId = req.user._id;
 
         // Validate required fields
-        if (!name || !photo || !description) {
+        if (!name || !description) {
             return res.status(400).json({
-                message: "Name, photo, and description are required"
+                message: "Name and description are required"
             });
         }
 
-        // Upload photo to cloudinary
-        const uploadResult = await cloudinary.uploader.upload(photo);// Process price data
-        let priceData = {
-            currency: price?.currency || "USD",
-            unit: price?.unit || "per item",
-            contactForPrice: price?.contactForPrice || false
-        };        // Validate and add price values
-        if (price?.contactForPrice) {
-            // For contact pricing, we don't need any price values
-        } else {
+        // Check if image file was uploaded
+        if (!req.file) {
+            return res.status(400).json({
+                message: "Product image is required"
+            });
+        }
+
+        // Parse price data from JSON string
+        let priceData;
+        try {
+            priceData = JSON.parse(req.body.price);
+        } catch (error) {
+            return res.status(400).json({
+                message: "Invalid price data format"
+            });        }
+
+        // Generate image URL for uploaded file
+        const imageUrl = fileService.generateFileUrl(req, req.file.filename);
+
+        // Validate and process price values
+        if (!priceData.contactForPrice) {
             // For regular pricing, we need at least minValue
-            if (!price?.minValue && price?.minValue !== 0) {
+            if (!priceData.minValue && priceData.minValue !== 0) {
                 return res.status(400).json({
                     message: "Price is required when not using 'Contact for pricing'"
                 });
             }
             
-            priceData.minValue = Number(price.minValue);
+            priceData.minValue = Number(priceData.minValue);
             
             // Add maxValue if provided
-            if (price?.maxValue !== undefined && price?.maxValue !== null && price?.maxValue !== "") {
-                priceData.maxValue = Number(price.maxValue);
+            if (priceData.maxValue !== undefined && priceData.maxValue !== null && priceData.maxValue !== "") {
+                priceData.maxValue = Number(priceData.maxValue);
                 
                 // Validate that maxValue >= minValue
                 if (priceData.maxValue < priceData.minValue) {
@@ -41,11 +53,10 @@ export const createProduct = async (req, res) => {
                         message: "Maximum price must be greater than or equal to minimum price"
                     });
                 }
-            }        }
-
-        const newProduct = new Product({
+            }
+        }const newProduct = new Product({
             name,
-            photo: uploadResult.secure_url,
+            photo: imageUrl,
             description,
             price: priceData,
             inStock: inStock !== undefined ? inStock : true,
@@ -110,7 +121,7 @@ export const getProductById = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { productId } = req.params;
-        const { name, photo, description, inStock, price } = req.body;
+        const { name, description, inStock } = req.body;
 
         const product = await Product.findById(productId);
         if (!product) {
@@ -122,28 +133,40 @@ export const updateProduct = async (req, res) => {
         // Update fields if provided
         if (name) product.name = name;
         if (description) product.description = description;
-        if (inStock !== undefined) product.inStock = inStock;          // Update price if provided
-        if (price) {
-            let priceData = {
-                currency: price.currency || product.price.currency || "USD",
-                unit: price.unit || product.price.unit || "per item",
-                contactForPrice: price.contactForPrice !== undefined ? price.contactForPrice : false
-            };            // Validate and add price values
-            if (price.contactForPrice) {
-                // For contact pricing, we don't need any price values
-            } else {
+        if (inStock !== undefined) product.inStock = inStock;
+
+        // Update price if provided
+        if (req.body.price) {
+            let priceData;
+            try {
+                priceData = JSON.parse(req.body.price);
+            } catch (error) {
+                return res.status(400).json({
+                    message: "Invalid price data format"
+                });
+            }
+
+            // Set defaults from existing product price if not provided
+            priceData = {
+                currency: priceData.currency || product.price.currency || "USD",
+                unit: priceData.unit || product.price.unit || "per item",
+                contactForPrice: priceData.contactForPrice !== undefined ? priceData.contactForPrice : false
+            };
+
+            // Validate and add price values
+            if (!priceData.contactForPrice) {
                 // For regular pricing, we need at least minValue
-                if (!price.minValue && price.minValue !== 0) {
+                if (!priceData.minValue && priceData.minValue !== 0) {
                     return res.status(400).json({
                         message: "Price is required when not using 'Contact for pricing'"
                     });
                 }
                 
-                priceData.minValue = Number(price.minValue);
+                priceData.minValue = Number(priceData.minValue);
                 
                 // Add maxValue if provided
-                if (price.maxValue !== undefined && price.maxValue !== null && price.maxValue !== "") {
-                    priceData.maxValue = Number(price.maxValue);
+                if (priceData.maxValue !== undefined && priceData.maxValue !== null && priceData.maxValue !== "") {
+                    priceData.maxValue = Number(priceData.maxValue);
                     
                     // Validate that maxValue >= minValue
                     if (priceData.maxValue < priceData.minValue) {
@@ -157,10 +180,15 @@ export const updateProduct = async (req, res) => {
             product.price = priceData;
         }
 
-        // Update photo if provided
-        if (photo) {
-            const uploadResult = await cloudinary.uploader.upload(photo);
-            product.photo = uploadResult.secure_url;
+        // Update photo if new file was uploaded
+        if (req.file) {
+            // Delete old image file if exists
+            if (product.photo) {
+                fileService.deleteFileByUrl(product.photo);
+            }
+            
+            // Set new image URL
+            product.photo = fileService.generateFileUrl(req, req.file.filename);
         }
 
         await product.save();
@@ -187,6 +215,11 @@ export const deleteProduct = async (req, res) => {
             return res.status(404).json({
                 message: "Product not found"
             });
+        }
+
+        // Delete associated image file if exists
+        if (product.photo) {
+            fileService.deleteFileByUrl(product.photo);
         }
 
         await Product.findByIdAndDelete(productId);

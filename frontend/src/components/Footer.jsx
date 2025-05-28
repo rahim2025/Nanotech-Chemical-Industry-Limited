@@ -31,7 +31,7 @@ const Footer = () => {
               <div className="flex items-center gap-2">
                 <Mail size={16} className="shrink-0 text-primary" />
                 <a href="mailto:purchase@nanotechchemical.com" className="text-sm hover:text-primary">
-                  purchase@nanotechchemical.com
+                  info@nanotechchemical.com
                 </a>
               </div>
             </div>
@@ -97,7 +97,7 @@ const Footer = () => {
             © {currentYear} Nanotech Chemical Industry Limited. All Rights Reserved.
           </p>
           <p className="mt-2 text-xs flex items-center justify-center gap-1">
-            Made with <Heart size={12} className="text-error" fill="currentColor" /> with quality, cost, and delivery in mind
+            Quality, cost and fast delivery are our top priorities.
           </p>
         </div>
       </div>

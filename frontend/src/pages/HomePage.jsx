@@ -1,4 +1,3 @@
-
 import ProductCarousel from '../components/ProductCarousel';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -34,35 +33,35 @@ const HomePage = () => {
       {/* Header section with logo */}
       <section className="py-12 bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center mb-12">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="size-16 rounded-full overflow-hidden bg-white border-2 border-primary/30 shadow-lg">
+          <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left mb-12 gap-4 md:gap-8">
+            <div className="flex flex-col xs:flex-row items-center gap-4 mb-6 md:mb-0">
+              <div className="w-16 h-16 xs:w-12 xs:h-12 md:w-16 md:h-16 rounded-full overflow-hidden bg-white border-2 border-primary/30 shadow-lg">
                 <img 
                   src="/logo.png" 
                   alt="Nanotech Chemical Logo" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="h-12 border-l-2 border-primary/30"></div>
-              <div className="space-y-1">
-                <div className="text-sm font-medium text-primary">Est. 2009</div>
+              <div className="hidden xs:block h-8 md:h-12 border-l-2 border-primary/30"></div>
+              <div className="space-y-1 text-center xs:text-left">
+                <div className="text-xs xs:text-sm font-medium text-primary">Nanotech</div>
                 <div className="text-xs text-base-content/60">Nanotechnology Excellence</div>
               </div>
             </div>
-            
-            <h1 className="text-4xl lg:text-5xl font-bold text-base-content leading-tight">
-              Nanotech Chemical
-              <span className="text-primary block">Industry Limited</span>
-            </h1>
-            
-            <p className="text-lg text-base-content/70 max-w-2xl mx-auto mt-4 mb-8">
-              Leading manufacturer of advanced nanomaterials and chemical solutions. 
-              Pioneering innovation in nanotechnology for a sustainable future.
-            </p>
-              <Link to="/" className="btn btn-primary btn-lg gap-2">
-              Explore Our Products
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            <div className="flex-1">
+              <h1 className="text-2xl xs:text-3xl md:text-4xl lg:text-5xl font-bold text-base-content leading-tight">
+                Nanotech Chemical
+                <span className="text-primary block">Industry Limited</span>
+              </h1>
+              <p className="text-base xs:text-lg text-base-content/70 max-w-2xl mx-auto md:mx-0 mt-4 mb-8">
+                Leading manufacturer of advanced nanomaterials and chemical solutions. 
+                Pioneering innovation in nanotechnology for a sustainable future.
+              </p>
+              <Link to="/" className="btn btn-primary btn-md xs:btn-lg gap-2 w-full xs:w-auto">
+                Explore Our Products
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

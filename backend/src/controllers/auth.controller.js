@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import { genToken } from "../lib/genToken.js";
-import cloudinary from "../lib/cloudinary.js";
+import fileService from "../lib/fileService.js";
 
 export const signup = async (req, res) => {
   try {
@@ -87,15 +87,30 @@ export const logout = async (req,res) =>{
 }
 export const updateProfile = async(req,res)=>{
   try{
-    const {profilePic} = req.body;
     const userId = req.user._id;
-    if(!profilePic){
+    
+    if(!req.file){
       return res.status(400).json({
-        message:"Profile pic not found"
+        message:"Profile picture is required"
       })
     }    
-    const uploadResult = await cloudinary.uploader.upload(profilePic);
-    const updateUser = await User.findByIdAndUpdate(userId,{profilePic:uploadResult.secure_url},{new:true});
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    // Delete old profile picture if exists
+    if (user.profilePic) {
+      fileService.deleteFileByUrl(user.profilePic);
+    }
+
+    // Generate new profile picture URL
+    const profilePicUrl = fileService.generateFileUrl(req, req.file.filename, 'profiles');
+    
+    const updateUser = await User.findByIdAndUpdate(userId,{profilePic:profilePicUrl},{new:true});
     res.status(200).json(updateUser);
   }catch(error){
     console.error("Error in update profile controller:", error);

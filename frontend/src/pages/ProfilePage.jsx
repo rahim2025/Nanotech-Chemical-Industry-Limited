@@ -3,25 +3,37 @@ import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import RoleBadge from "../components/RoleBadge";
+import toast from "react-hot-toast";
 
 export const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   console.log(authUser);
   const [selectedImg, setSelectedImg] = useState(null);
-
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file');
+      return;
+    }
 
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImg(reader.result);
+    };
     reader.readAsDataURL(file);
 
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
-    };
+    // Upload the file
+    await updateProfile(file);
   };
 
   // Show login prompt if user is not authenticated

@@ -4,7 +4,6 @@ import Footer from "./components/Footer"
 import  HomePage  from "./pages/HomePage"
 import { LoginPage } from "./pages/LoginPage"
 import { SignUpPage } from "./pages/SignupPage"
-import { SettingsPage } from "./pages/SettingsPage"
 import { ProfilePage } from "./pages/ProfilePage"
 import AdminDashboard from "./pages/AdminDashboard"
 import ProductsPage from "./pages/ProductsPage"
@@ -38,7 +37,7 @@ const App = () =>{
         <Route path="/about" element={<AboutUsPage/>}/>
         <Route path="/login" element={!authUser? <LoginPage/> : <Navigate to= "/" />}/>
         <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to = "/"/> }/>
-        <Route path="/settings" element={<SettingsPage/>}/>
+
         <Route path="/profile" element={<ProfilePage/>}/>
         <Route path="/products" element={<Navigate to= "/" />}/> {/* Redirect /products to / */}
         <Route path="/products/:productId" element={<ProductDetailPage/>}/>

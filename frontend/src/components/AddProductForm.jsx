@@ -4,7 +4,9 @@ import { Camera, Package, FileText, ToggleLeft, ToggleRight, DollarSign } from "
 import toast from "react-hot-toast";
 
 const AddProductForm = ({ product, onSuccess, onCancel }) => {
-    const { createProduct, updateProduct, isCreating } = useProductStore();    const [formData, setFormData] = useState({
+    const { createProduct, updateProduct, isCreating } = useProductStore();
+
+    const [formData, setFormData] = useState({
         name: "",
         description: "",
         price: {
@@ -16,10 +18,11 @@ const AddProductForm = ({ product, onSuccess, onCancel }) => {
         },
         inStock: true
     });
-    const [selectedImage, setSelectedImage] = useState(null);
-      const isEditing = !!product;
-    
-    // Initialize form data when editing
+    const [selectedImageFile, setSelectedImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const isEditing = !!product;
+      // Initialize form data when editing
     useEffect(() => {
         if (product) {
             setFormData({
@@ -34,29 +37,48 @@ const AddProductForm = ({ product, onSuccess, onCancel }) => {
                 },
                 inStock: product.inStock ?? true
             });
-            setSelectedImage(product.photo || null);
+            setImagePreview(product.photo || null);
         }
     }, [product]);
 
     // Debug logging for formData changes
     useEffect(() => {
         console.log('FormData updated:', formData);
-    }, [formData]);
-
-    const handleImageUpload = (e) => {
+    }, [formData]);    const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            toast.error("Please select a valid image file (JPEG, PNG, GIF, WebP)");
+            return;
+        }
+
+        // Validate file size (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error("File size must be less than 10MB");
+            return;
+        }
+
+        setSelectedImageFile(file);
+
+        // Create preview
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
-            setSelectedImage(reader.result);
+            setImagePreview(reader.result);
         };
     };    const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!formData.name.trim() || !formData.description.trim() || !selectedImage) {
-            toast.error("Please fill in all required fields and select an image");
+        if (!formData.name.trim() || !formData.description.trim()) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+
+        if (!isEditing && !selectedImageFile) {
+            toast.error("Please select an image for the product");
             return;
         }
           // Create a clean price object
@@ -101,21 +123,25 @@ const AddProductForm = ({ product, onSuccess, onCancel }) => {
         }
         
         console.log("Price data being submitted:", priceData);        try {
-            // Create a final form data with properly converted price values
-            const finalFormData = {
-                ...formData,
-                price: priceData,
-                photo: selectedImage
-            };
+            // Create FormData for file upload
+            const submitData = new FormData();
+            submitData.append('name', formData.name);
+            submitData.append('description', formData.description);
+            submitData.append('inStock', formData.inStock);
+            submitData.append('price', JSON.stringify(priceData));
             
-            console.log("Final data being submitted:", finalFormData);
+            // Only append photo if a new file is selected
+            if (selectedImageFile) {
+                submitData.append('photo', selectedImageFile);
+            }
             
             if (isEditing) {
-                await updateProduct(product._id, finalFormData);
+                await updateProduct(product._id, submitData);
             } else {
-                await createProduct(finalFormData);
+                await createProduct(submitData);
             }
-              // Reset form
+              
+            // Reset form
             setFormData({ 
                 name: "", 
                 description: "", 
@@ -128,7 +154,8 @@ const AddProductForm = ({ product, onSuccess, onCancel }) => {
                 },
                 inStock: true 
             });
-            setSelectedImage(null);
+            setSelectedImageFile(null);
+            setImagePreview(null);
             onSuccess && onSuccess();
         } catch (error) {
             // Error is handled in the store
@@ -179,11 +206,10 @@ const AddProductForm = ({ product, onSuccess, onCancel }) => {
                         Product Image *
                     </label>
                     <div className="flex flex-col items-center gap-4">
-                        <div className="relative">
-                            <div className="w-32 h-32 border-2 border-dashed border-base-300 rounded-lg flex items-center justify-center overflow-hidden">
-                                {selectedImage ? (
+                        <div className="relative">                            <div className="w-32 h-32 border-2 border-dashed border-base-300 rounded-lg flex items-center justify-center overflow-hidden">
+                                {imagePreview ? (
                                     <img
-                                        src={selectedImage}
+                                        src={imagePreview}
                                         alt="Product preview"
                                         className="w-full h-full object-cover"
                                     />

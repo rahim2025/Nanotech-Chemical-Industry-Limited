@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LogOut, MessageSquare, Settings, User, Shield, Package, Home, Users } from "lucide-react";
+import { LogOut, User, Shield, Package, Home, Users } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
 export const Navbar = () => {
@@ -22,7 +22,9 @@ export const Navbar = () => {
                 />
               </div>
               <h1 className="text-lg font-bold">NANOTECH CHEMICAL INDUSTRY LIMITED</h1>
-            </Link>              {/* Always visible navigation */}            <nav className="hidden md:flex items-center gap-4">
+            </Link>              
+            {/* Always visible navigation */}            
+            <nav className="hidden md:flex items-center gap-4">
               <Link
                 to="/home"
                 className="btn btn-sm btn-ghost gap-2"
@@ -71,13 +73,6 @@ export const Navbar = () => {
                 {/* Notification Bell for Admin Users */}
                 <NotificationBell />
                 
-                <Link
-                  to="/settings"
-                  className="btn btn-sm gap-2"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span className="hidden sm:inline">Settings</span>
-                </Link>
 
                 <Link to="/profile" className="btn btn-sm gap-2">
                   <User className="size-5" />
