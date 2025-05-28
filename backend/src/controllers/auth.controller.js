@@ -22,14 +22,18 @@ export const signup = async (req, res) => {
       fullName: userData.fullName,
       email: userData.email,
       password: hashedPassword
-    });
-
-    await newUser.save(); 
-    genToken(newUser._id, res);
+    });    await newUser.save(); 
+    const token = genToken(newUser._id, res);
 
     console.log(newUser);
     return res.status(201).json({
-      message: "User registered in DB"
+      id: newUser._id,
+      fullName: newUser.fullName,
+      email: newUser.email,
+      profilePic: newUser.profilePic,
+      role: newUser.role,
+      token: token, // Include token in response for localStorage
+      message: "User registered successfully"
     });
 
   } catch (error) {
@@ -53,13 +57,17 @@ export const login = async (req,res) =>{
     return res.status(400).json({
       message: "Wrong credentials"
     });
-  }  genToken(user._id,res);
+  }  // Generate token and set cookie
+  const token = genToken(user._id, res);
+  
+  // Send token in response body too (for clients that can't use cookies)
   res.status(200).json({
-    id:user._id,
-    fullName:user.fullName,
-    email:user.email,
-    profilePic:user.profilePic,
-    role:user.role
+    id: user._id,
+    fullName: user.fullName,
+    email: user.email,
+    profilePic: user.profilePic,
+    role: user.role,
+    token: token // Include token in response for localStorage
   });
 
   }catch(error){

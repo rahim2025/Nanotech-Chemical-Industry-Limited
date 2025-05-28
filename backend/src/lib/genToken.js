@@ -8,13 +8,14 @@ export const genToken = (userId,res) =>{
     // Set proper cookie settings based on environment and request origin
     const origin = res.req.headers.origin || '';
     console.log('Request origin:', origin);
-    
-    // Cookie settings
+      // Cookie settings
     const cookieOptions = {
         maxAge: 7*24*60*60*1000,
         httpOnly: true,
-        sameSite: 'none', // Allow cross-site cookies
-        secure: true, // Required for SameSite=None
+        // For development without HTTPS, use lax instead of none
+        // and don't require secure
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: process.env.NODE_ENV === 'production'
     };
     
     // Only set domain for actual domain names, not IP addresses

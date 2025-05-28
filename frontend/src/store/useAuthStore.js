@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import { axiosInstance } from "../lib/axios"
+import { axiosInstance, saveTokenToStorage, removeTokenFromStorage } from "../lib/axios"
 import toast from "react-hot-toast";
 
 export const useAuthStore = create((set) =>({    authUser:null,
@@ -43,12 +43,19 @@ export const useAuthStore = create((set) =>({    authUser:null,
           }
 
 
-    },    isLoggingIn:false,
-    login: async(data)=>{
+    },    isLoggingIn:false,    login: async(data)=>{
         set({isLoggingIn:true});
         try {
             const res = await axiosInstance.post("/auth/login",data)
             set({authUser:res.data})
+            
+            // Store the JWT token in localStorage as backup
+            if (res.data) {
+                // The server should return the token in the response for this to work
+                // You may need to modify your backend to include the token in the response
+                saveTokenToStorage(res.data.token);
+            }
+            
             toast.success("Logged in successfully");
         } catch (error) {
             console.error("Login error:", error);
@@ -66,18 +73,24 @@ export const useAuthStore = create((set) =>({    authUser:null,
         } finally {
             set({isLoggingIn:false});
         }
-    },
-    logout: async() =>{
+    },    logout: async() =>{
         try {
             const res = await axiosInstance.post("/auth/logout");
             set({authUser:null});
+            
+            // Remove token from localStorage
+            removeTokenFromStorage();
+            
             toast.success("Logout successfully");   
         } catch (error) {
-            console.log("Error in signup auth",error)
-            toast.error(error.response.data.errors)
+            console.log("Error in logout:", error)
+            // Still clear local state even if server logout fails
+            set({authUser:null});
+            removeTokenFromStorage();
+            
+            toast.error(error.response?.data?.message || "Error during logout")
         }
-        
-    },    updateProfile: async (file) => {
+    },updateProfile: async (file) => {
         set({ isUpdatingProfile: true });
         try {
           if (!file) {
