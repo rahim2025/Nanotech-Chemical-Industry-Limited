@@ -1,5 +1,6 @@
 import Inquiry from "../models/inquiry.model.js";
 import User from "../models/user.model.js";
+import { createNotification } from "./notification.controller.js";
 
 // Create a new inquiry
 export const createInquiry = async (req, res) => {
@@ -21,11 +22,29 @@ export const createInquiry = async (req, res) => {
       productName,
       inquiryType: inquiryType || "pricing"
     });
+      await newInquiry.save();
     
-    await newInquiry.save();
-    
-    // Notify all admin users (could be implemented with notifications or email sending)
-    // For now, we just save the inquiry
+    // Create notification for admin users
+    try {
+      await createNotification({
+        type: "inquiry",
+        title: "New Product Inquiry",
+        message: `New inquiry received for "${productName}" from ${name}`,
+        data: {
+          inquiryId: newInquiry._id,
+          productId,
+          productName,
+          customerName: name,
+          customerEmail: email,
+          inquiryType: inquiryType || "pricing"
+        },
+        recipientRole: "admin",
+        priority: "medium"
+      });
+    } catch (notificationError) {
+      console.error("Error creating notification:", notificationError);
+      // Don't fail the inquiry creation if notification fails
+    }
     
     res.status(201).json({ 
       message: "Your inquiry has been submitted successfully", 

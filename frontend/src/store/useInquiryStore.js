@@ -12,6 +12,30 @@ export const useInquiryStore = create((set, get) => ({
     hasMore: false
   },
 
+  // Submit a new inquiry
+  submitInquiry: async (inquiryData) => {
+    try {
+      const response = await axiosInstance.post('/inquiries', inquiryData);
+      
+      // Show success message
+      toast.success('Your inquiry has been submitted successfully!', {
+        icon: '📩',
+        duration: 4000,
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting inquiry:", error);
+      toast.error(error.response?.data?.message || "Failed to submit inquiry");
+      throw error;
+    }
+  },
+
   // Get all inquiries (admin only)
   getInquiries: async (page = 1, status) => {
     set({ isLoading: true });

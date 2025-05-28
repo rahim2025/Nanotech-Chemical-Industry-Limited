@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Send, X } from 'lucide-react';
-import { axiosInstance } from '../lib/axios';
+import { useInquiryStore } from '../store/useInquiryStore';
 import toast from 'react-hot-toast';
 
 const ProductInquiryForm = ({ product, onClose }) => {
+  const { submitInquiry } = useInquiryStore();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,7 +20,6 @@ const ProductInquiryForm = ({ product, onClose }) => {
       [name]: value
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -34,14 +34,13 @@ const ProductInquiryForm = ({ product, onClose }) => {
         timestamp: new Date()
       };
 
-      // Send to backend endpoint
-      await axiosInstance.post('/inquiries', inquiryData);
+      // Submit inquiry using store method
+      await submitInquiry(inquiryData);
       
-      toast.success('Your inquiry has been submitted successfully!');
       if (onClose) onClose();
     } catch (error) {
+      // Error handling is done in the store
       console.error('Error submitting inquiry:', error);
-      toast.error(error.response?.data?.message || 'Failed to send inquiry. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

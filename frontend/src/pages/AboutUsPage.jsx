@@ -144,30 +144,13 @@ const AboutUsPage = () => {
                 <div className="flex items-center gap-3">
                   <Mail className="text-primary shrink-0" />
                   <a href="mailto:purchase@nanotechcil.com" className="hover:text-primary">
-                    purchase@nanotechchemical.com
+                    info@nanotechchemical.com
                   </a>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <Mail className="text-primary shrink-0" />
-                  <a href="mailto:export@nanotechcil.com" className="hover:text-primary">
-                    export@nanotechchemical.com
-                  </a>
-                </div>
                 
-                <div className="flex items-center gap-3">
-                  <Mail className="text-primary shrink-0" />
-                  <a href="mailto:nanotechcn@hotmail.com" className="hover:text-primary">
-                    nanotechchemical@hotmail.com
-                  </a>
-                </div>
                 
-                <div className="flex items-center gap-3">
-                  <Mail className="text-primary shrink-0" />
-                  <a href="mailto:nanotechcil@hotmail.com" className="hover:text-primary">
-                    nanotechchemical@hotmail.com
-                  </a>
-                </div>
+
                 
                 <div className="flex items-center gap-3">
                   <Globe className="text-primary shrink-0" />

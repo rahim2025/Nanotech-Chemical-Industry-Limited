@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { LogOut, MessageSquare, Settings, User, Shield, Package, Home, Users } from "lucide-react";
+import NotificationBell from "./NotificationBell";
 
 export const Navbar = () => {
   const { logout, authUser } = useAuthStore();
@@ -65,10 +66,11 @@ export const Navbar = () => {
             >
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">About</span>
-            </Link>
-
-            {authUser ? (
+            </Link>            {authUser ? (
               <>
+                {/* Notification Bell for Admin Users */}
+                <NotificationBell />
+                
                 <Link
                   to="/settings"
                   className="btn btn-sm gap-2"

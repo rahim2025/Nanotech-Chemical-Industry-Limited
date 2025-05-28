@@ -8,6 +8,7 @@ import adminRouter from "./routers/admin.router.js"
 import productRouter from "./routers/product.router.js"
 import commentRouter from "./routers/comment.router.js"
 import inquiryRouter from "./routers/inquiry.router.js"
+import notificationRouter from "./routers/notification.router.js"
 import {connectDB} from "./lib/db.js"
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api/admin",adminRouter)
 app.use("/api/products",productRouter)
 app.use("/api/comments",commentRouter)
 app.use("/api/inquiries",inquiryRouter)
+app.use("/api/notifications",notificationRouter)
 
 app.listen(5000,()=>{
     console.log("Server is running on port 5000");

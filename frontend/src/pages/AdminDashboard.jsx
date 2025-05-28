@@ -5,7 +5,7 @@ import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useCommentStore } from "../store/useCommentStore";
 import { useNotificationStore } from "../store/useNotificationStore";
-import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply } from "lucide-react";
+import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply, Bell } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import CommentItem from "../components/CommentItem";
 
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tabFromUrl = searchParams.get('tab');
-        if (tabFromUrl && ['users', 'products', 'comments', 'inquiries'].includes(tabFromUrl)) {
+        if (tabFromUrl && ['users', 'products', 'comments', 'notifications', 'inquiries'].includes(tabFromUrl)) {
             setActiveTab(tabFromUrl);
         }
     }, [location.search]);// Handle tab change with URL update
@@ -214,8 +214,14 @@ const AdminDashboard = () => {
                             <div className="badge badge-error badge-sm">
                                 {comments.filter(c => !c.adminReply?.text).length}
                             </div>
-                        )}
-                    </button>
+                        )}                    </button>
+                    <Link
+                        to="/admin/notifications"
+                        className="tab gap-2"
+                    >
+                        <Bell className="w-4 h-4" />
+                        Notifications
+                    </Link>
                     <Link
                         to="/admin/inquiries"
                         className="tab gap-2"
