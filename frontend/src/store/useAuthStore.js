@@ -80,6 +80,14 @@ export const useAuthStore = create((set) =>({    authUser:null,
     },    updateProfile: async (file) => {
         set({ isUpdatingProfile: true });
         try {
+          if (!file) {
+            toast.error("No file selected");
+            set({ isUpdatingProfile: false });
+            return;
+          }
+
+          console.log("Uploading file:", file.name, "Size:", file.size);
+          
           const formData = new FormData();
           formData.append('profilePic', file);
           
@@ -87,12 +95,33 @@ export const useAuthStore = create((set) =>({    authUser:null,
             headers: {
               'Content-Type': 'multipart/form-data',
             },
+            withCredentials: true, // Ensure cookies are sent
           });
+          
           set({ authUser: res.data });
           toast.success("Profile updated successfully");
         } catch (error) {
-          console.log("error in update profile:", error);
-          toast.error(error.response?.data?.message || "Failed to update profile");
+          console.error("Error in update profile:", error);
+          
+          // More detailed error handling
+          if (error.response) {
+            // The server responded with a status code outside of 2xx
+            console.error("Response data:", error.response.data);
+            console.error("Response status:", error.response.status);
+            
+            if (error.response.status === 400 && error.response.data.message === "Please login first") {
+              toast.error("Session expired. Please log in again.");
+              set({ authUser: null }); // Clear auth state to prompt login
+            } else {
+              toast.error(error.response.data.message || "Failed to update profile");
+            }
+          } else if (error.request) {
+            // The request was made but no response was received
+            toast.error("No response from server. Check your connection.");
+          } else {
+            // Something happened in setting up the request
+            toast.error("Error uploading profile photo: " + error.message);
+          }
         } finally {
           set({ isUpdatingProfile: false });
         }

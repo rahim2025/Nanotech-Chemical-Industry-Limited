@@ -29,20 +29,27 @@ app.use(cors({
         if(!origin) return callback(null, true);
         
         const allowedOrigins = [
-            "http://31.97.49.55:5173", 
+            "http://31.97.49.55:5173",
+            "https://31.97.49.55:5173",
             "http://localhost:5173", 
             "http://www.nanotechchemical.com",
-            "https://www.nanotechchemical.com"
+            "https://www.nanotechchemical.com",
+            "http://nanotechchemical.com",
+            "https://nanotechchemical.com"
         ];
         
-        if(allowedOrigins.indexOf(origin) !== -1) {
+        console.log("Request from origin:", origin);
+        
+        if(allowedOrigins.includes(origin)) {
             callback(null, origin); // Set the correct origin
         } else {
-            console.log("Origin blocked by CORS:", origin);
-            callback(new Error('Not allowed by CORS'));
+            // For development, accept any origin temporarily
+            console.log("Origin not in allowed list, but allowing:", origin);
+            callback(null, origin);
         }
     },
-    credentials: true
+    credentials: true,
+    exposedHeaders: ['set-cookie']
 }))
 
 

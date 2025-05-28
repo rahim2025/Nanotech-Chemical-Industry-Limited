@@ -5,16 +5,23 @@ export const genToken = (userId,res) =>{
         expiresIn:"7d"
     });
 
-    // Get environment to determine proper cookie settings
-    const isProduction = process.env.NODE_ENV === 'production';
+    // Set proper cookie settings based on environment and request origin
+    const origin = res.req.headers.origin || '';
+    console.log('Request origin:', origin);
     
-    res.cookie("jwt",token,{
+    // Cookie settings
+    const cookieOptions = {
         maxAge: 7*24*60*60*1000,
         httpOnly: true,
-        // For cross-domain cookies in production
-        domain: isProduction ? '.nanotechchemical.com' : undefined, // dot prefix allows sharing between subdomains
-        sameSite: isProduction ? 'none' : 'lax', // 'none' allows cross-site cookies
-        secure: isProduction, // secure must be true when sameSite is 'none'
-    });
+        sameSite: 'none', // Allow cross-site cookies
+        secure: true, // Required for SameSite=None
+    };
+    
+    // Only set domain for actual domain names, not IP addresses
+    if (origin.includes('nanotechchemical.com')) {
+        cookieOptions.domain = '.nanotechchemical.com';
+    }
+      console.log('Setting cookie with options:', cookieOptions);
+    res.cookie("jwt", token, cookieOptions);
     return token;
 }

@@ -72,13 +72,29 @@ export const login = async (req,res) =>{
 }
 export const logout = async (req,res) =>{
   try{
-    res.cookie("jwt","",{maxAge:0});
+    const origin = req.headers.origin || '';
+    console.log('Logout request from origin:', origin);
+    
+    // Cookie options for clearing
+    const cookieOptions = {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    };
+    
+    // Only set domain for actual domain names, not IP addresses
+    if (origin.includes('nanotechchemical.com')) {
+      cookieOptions.domain = '.nanotechchemical.com';
+    }
+    
+    res.cookie("jwt", "", cookieOptions);
     return res.status(200).json({
       message: "Logout successfully"
     });
   }
   catch(error){
-    console.log("Error in logout controller",error);
+    console.log("Error in logout controller", error);
     return res.status(400).json({
       message: "Internal server error"
     });
@@ -87,13 +103,23 @@ export const logout = async (req,res) =>{
 }
 export const updateProfile = async(req,res)=>{
   try{
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Authentication required"
+      });
+    }
+    
     const userId = req.user._id;
     
+    // Check if file was uploaded
     if(!req.file){
       return res.status(400).json({
         message:"Profile picture is required"
-      })
-    }    
+      });
+    }
+    
+    console.log("Profile update requested by user:", userId, "File:", req.file.filename);
     
     const user = await User.findById(userId);
     if (!user) {
@@ -104,18 +130,29 @@ export const updateProfile = async(req,res)=>{
 
     // Delete old profile picture if exists
     if (user.profilePic) {
-      fileService.deleteFileByUrl(user.profilePic);
+      try {
+        fileService.deleteFileByUrl(user.profilePic);
+      } catch (deleteError) {
+        console.error("Error deleting old profile picture:", deleteError);
+        // Continue even if deletion fails
+      }
     }
 
     // Generate new profile picture URL
     const profilePicUrl = fileService.generateFileUrl(req, req.file.filename, 'profiles');
     
-    const updateUser = await User.findByIdAndUpdate(userId,{profilePic:profilePicUrl},{new:true});
+    const updateUser = await User.findByIdAndUpdate(
+      userId,
+      {profilePic:profilePicUrl},
+      {new:true}
+    ).select("-password");
+    
+    console.log("Profile updated successfully for user:", userId);
     res.status(200).json(updateUser);
-  }catch(error){
+  } catch(error) {
     console.error("Error in update profile controller:", error);
     return res.status(500).json({
-      message: "Internal server error"
+      message: "Failed to update profile: " + (error.message || "Unknown error")
     });
   }
 }
