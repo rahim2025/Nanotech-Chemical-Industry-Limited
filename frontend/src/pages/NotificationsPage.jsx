@@ -64,20 +64,11 @@ const NotificationsPage = () => {
         return notifications;
     }
   };
-
   const handleNotificationClick = async (notification) => {
     if (!notification.read) {
       await markAsRead(notification._id);
     }
-    
-    // Navigate based on notification type
-    if (notification.data?.inquiryId) {
-      navigate(`/admin?tab=inquiries&highlight=${notification.data.inquiryId}`);
-    } else if (notification.data?.productId) {
-      navigate(`/products/${notification.data.productId}`);
-    } else if (notification.data?.commentId) {
-      navigate(`/products/${notification.data.productId}#comments`);
-    }
+    // Just mark as read, no navigation
   };
 
   const handleSelectNotification = (notificationId) => {

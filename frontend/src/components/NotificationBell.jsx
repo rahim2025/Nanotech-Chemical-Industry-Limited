@@ -72,18 +72,11 @@ const NotificationBell = () => {
         return notifications;
     }
   };
-
   const handleNotificationClick = async (notification) => {
     if (!notification.read) {
       await markAsRead(notification._id || notification.id);
     }
-    
-    // Navigate to relevant page based on notification type
-    if (notification.data?.inquiryId) {
-      window.location.href = `/admin?tab=inquiries&highlight=${notification.data.inquiryId}`;
-    } else if (notification.data?.productId) {
-      window.location.href = `/products/${notification.data.productId}`;
-    }
+    // Just mark as read, no navigation
   };
 
   const formatTimeAgo = (timestamp) => {
@@ -225,25 +218,9 @@ const NotificationBell = () => {
                    filter === 'inquiry' ? 'No inquiry notifications' :
                    filter === 'comment' ? 'No comment notifications' :
                    'No notifications yet'}
-                </p>
-              </div>
+                </p>              </div>
             )}
           </div>
-
-          {/* Footer */}
-          {filteredNotifications.length > 0 && (
-            <div className="p-3 border-t border-base-300">
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  window.location.href = '/admin?tab=notifications';
-                }}
-                className="w-full text-center text-xs text-primary hover:underline"
-              >
-                View all notifications
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
