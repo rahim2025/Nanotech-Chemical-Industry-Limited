@@ -26,25 +26,28 @@ const app = express();
 app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
+
+// CORS configuration
+const allowedOrigins = [
+    "https://www.nanotechchemical.com",
+    "https://nanotechchemical.com"
+];
+
+// In development mode, accept localhost origins
+if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins.push("http://localhost:5173");
+    allowedOrigins.push("http://localhost:3000");
+}
+
 app.use(cors({
     origin: function(origin, callback) {
         // Allow requests with no origin (like mobile apps, curl requests)
         if(!origin) return callback(null, true);
         
-        const allowedOrigins = [
-            "https://www.nanotechchemical.com",
-            "https://nanotechchemical.com"
-        ];
-        
-        // In development mode, accept localhost origins
-        if (process.env.NODE_ENV !== 'production') {
-            allowedOrigins.push("http://localhost:5173");
-        }
-        
         console.log("Request from origin:", origin);
         
-        if(allowedOrigins.includes(origin)) {
-            callback(null, origin); // Set the correct origin
+        if(allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true); // Allow the specific origin
         } else {
             // In production, reject non-allowed origins
             if (process.env.NODE_ENV === 'production') {
@@ -52,11 +55,13 @@ app.use(cors({
                 return callback(new Error('CORS not allowed'), false);
             } else {
                 console.log("Origin not in allowed list, but allowing in development:", origin);
-                callback(null, origin);
+                callback(null, true);
             }
         }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['set-cookie']
 }))
 
@@ -83,12 +88,27 @@ app.use((error, req, res, next) => {
     next(error);
 });
 
+// Add a simple test endpoint to verify CORS is working
+app.get('/api/cors-test', (req, res) => {
+    res.json({ message: 'CORS is working correctly' });
+});
+
 app.use("/api/auth",authRouter)
 app.use("/api/admin",adminRouter)
 app.use("/api/products",productRouter)
 app.use("/api/comments",commentRouter)
 app.use("/api/inquiries",inquiryRouter)
 app.use("/api/notifications",notificationRouter)
+
+// Global error handler that preserves CORS headers
+app.use((err, req, res, next) => {
+    console.error('Global error:', err);
+    
+    // Send appropriate error response while preserving CORS headers
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+    });
+});
 
 
 const PORT = process.env.PORT || 5000;
