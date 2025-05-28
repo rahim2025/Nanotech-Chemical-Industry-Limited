@@ -58,6 +58,11 @@ app.use("/api/comments",commentRouter)
 app.use("/api/inquiries",inquiryRouter)
 app.use("/api/notifications",notificationRouter)
 
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is live!");
+});
+
+
 app.listen(5000, '0.0.0.0', () => {
     console.log("Server is running on port 5000");
     connectDB();
