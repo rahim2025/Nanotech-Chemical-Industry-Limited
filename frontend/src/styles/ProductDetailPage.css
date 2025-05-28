@@ -1,0 +1,910 @@
+/* Product Detail Page Styles */
+/* Animation for slide down effect */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Animation for fade in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Animation for slide up effect */
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Animation for pulse effect */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s infinite;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Comment hover effect */
+.comment-item {
+  transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom styling for admin replies */
+.admin-reply {
+  background: linear-gradient(to right, rgba(var(--p), 0.1), transparent);
+  border-left: 3px solid hsl(var(--p));
+  position: relative;
+}
+
+.admin-reply::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  border-width: 0 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent rgba(var(--p), 0.1);
+}
+
+/* Improved focus state for comment form */
+#comment-form-input:focus {
+  box-shadow: 0 0 0 2px rgba(var(--p), 0.3);
+  border-color: hsl(var(--p));
+}
+
+/* Product image gallery effects */
+.product-image-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.product-image {
+  transition: transform 0.5s ease, opacity 0.4s ease;
+}
+
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+.gallery-navigation {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-image-container:hover .gallery-navigation {
+  opacity: 1;
+}
+
+.gallery-button {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.gallery-button:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+/* Tab content animations */
+.tab-content {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Product gallery thumbnails */
+.thumbnails-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 8px;
+}
+
+.thumbnail {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.thumbnail:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border-color: hsl(var(--p));
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Image zoom effect on hover */
+.zoom-hover {
+  overflow: hidden;
+}
+
+.zoom-hover img {
+  transition: transform 0.5s ease;
+}
+
+.zoom-hover:hover img {
+  transform: scale(1.2);
+}
+
+/* Star rating styling */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+}
+
+.star {
+  color: #d1d5db; /* Default gray color */
+  transition: color 0.2s ease;
+}
+
+.star.filled {
+  color: #f59e0b; /* Amber/yellow color for filled stars */
+}
+
+.star.half {
+  position: relative;
+}
+
+.star.half::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #f59e0b;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/svg%3E");
+  mask-size: cover;
+}
+
+/* 3D card hover effect for product cards */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.product-card:hover {
+  transform: translateY(-5px) rotateX(2deg);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 4px 12px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* Skeleton loading animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Staggered fade-in animation for lists */
+.staggered-fade-in > * {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.staggered-fade-in > *:nth-child(1) { animation-delay: 0.1s; }
+.staggered-fade-in > *:nth-child(2) { animation-delay: 0.2s; }
+.staggered-fade-in > *:nth-child(3) { animation-delay: 0.3s; }
+.staggered-fade-in > *:nth-child(4) { animation-delay: 0.4s; }
+.staggered-fade-in > *:nth-child(5) { animation-delay: 0.5s; }
+.staggered-fade-in > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Favorite button animation */
+@keyframes favorite {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.favorite-btn {
+  transition: all 0.2s ease;
+}
+
+.favorite-btn:active {
+  animation: favorite 0.3s ease;
+}
+
+.favorite-btn.active {
+  color: #f43f5e;
+}
+
+/* Technical specifications styling */
+.specs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.specs-table tr:nth-child(odd) {
+  background-color: rgba(0,0,0,0.03);
+}
+
+.specs-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.specs-table td:first-child {
+  font-weight: 600;
+  width: 30%;
+}
+
+/* Image gallery transition effects */
+.image-fade {
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Enhanced animations and modern effects */
+
+/* Floating animation for badges */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-bounce-slow {
+  animation: bounce 2s ease infinite;
+}
+
+/* Enhanced image zoom effect */
+.zoom-container {
+  position: relative;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.zoom-container.zoomed {
+  cursor: zoom-out;
+}
+
+.zoom-container.zoomed img {
+  transform: scale(1.5);
+}
+
+/* Enhanced gallery thumbnail animations */
+.thumbnail-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.thumbnail-hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: hsl(var(--p));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.thumbnail-hover:hover::after {
+  transform: scaleX(1);
+}
+
+/* Ripple effect for buttons */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.btn-ripple:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0) translate(-50%, -50%);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(20, 20) translate(-50%, -50%);
+    opacity: 0;
+  }
+}
+
+/* Shiny effect on hover */
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  transform: skewX(-25deg);
+  transition: all 0.75s;
+}
+
+.shine-effect:hover::before {
+  left: 125%;
+}
+
+/* Modern comment styling enhancements */
+.comment-modern {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.comment-highlight {
+  background: linear-gradient(135deg, rgba(var(--p), 0.1), rgba(var(--p), 0.05));
+  border-left: 4px solid hsl(var(--p));
+}
+
+/* Enhanced scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(var(--p), 0.2);
+  z-index: 1000;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, hsl(var(--p)), hsl(var(--s)));
+  transition: width 0.1s ease;
+}
+
+/* Floating Action Button (FAB) */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.fab.hidden {
+  transform: translateY(100px);
+  opacity: 0;
+}
+
+/* Enhanced animations for modern UI */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+/* Loading container styling */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Enhanced comment section styling */
+.modern-comment-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-comment-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Comment form container */
+.comment-form-container {
+  position: relative;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--secondary-rgb), 0.05));
+  border-radius: 0.75rem;
+  border: 1px solid rgba(var(--primary-rgb), 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* Comment item wrapper */
+.comment-item-wrapper {
+  position: relative;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.comment-item-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Enhanced fullscreen gallery */
+.fullscreen-gallery {
+  backdrop-filter: blur(20px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.fullscreen-gallery img {
+  transition: transform 0.3s ease-out;
+}
+
+.fullscreen-gallery img:hover {
+  transform: scale(1.05);
+}
+
+/* Enhanced product image hover effects */
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.product-image-container:hover::after {
+  left: 100%;
+}
+
+/* Enhanced zoom effects */
+.zoom-container {
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.zoom-container.zoomed {
+  cursor: zoom-out;
+}
+
+.zoom-container img {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced select dropdown styling for better contrast - FORCE OVERRIDE */
+.sort-container select {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.sort-container select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+  outline: none !important;
+}
+
+.sort-container select option {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  padding: 0.5rem !important;
+}
+
+/* Dark mode detection and override */
+@media (prefers-color-scheme: dark) {
+  .sort-container select {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #6b7280 !important;
+  }
+  
+  .sort-container select option {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+  }
+}
+
+/* Theme-specific overrides for DaisyUI themes */
+[data-theme] .sort-container select,
+html[data-theme] .sort-container select {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+
+[data-theme] .sort-container select option,
+html[data-theme] .sort-container select option {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* Additional fallback for any edge cases */
+select[style*="backgroundColor"] {
+  -webkit-text-fill-color: #1f2937 !important;
+  text-shadow: none !important;
+}
+
+select[style*="backgroundColor"] option {
+  -webkit-text-fill-color: #1f2937 !important;
+  text-shadow: none !important;
+}
+
+/* Fallback styles to ensure dropdown text is always visible */
+select.comment-sort-select {
+  color: inherit !important;
+  background: var(--fallback-b1, #ffffff) !important;
+}
+
+select.comment-sort-select option {
+  color: inherit !important;
+  background: var(--fallback-b1, #ffffff) !important;
+}
+
+/* Ensure text contrast in both light and dark themes */
+[data-theme="light"] .comment-sort-select {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+
+[data-theme="light"] .comment-sort-select option {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="dark"] .comment-sort-select {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .comment-sort-select option {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+/* Universal fallback for any theme */
+.comment-sort-select {
+  font-weight: 500;
+  text-shadow: none;
+  -webkit-text-fill-color: unset;
+}
+
+.comment-sort-select option {
+  font-weight: 500;
+  text-shadow: none;
+  -webkit-text-fill-color: unset;
+}
+
+/* Improved sort container styling */
+.sort-container {
+  background: linear-gradient(135deg, hsl(var(--b2)), hsl(var(--b3)));
+  border: 1px solid hsl(var(--b3));
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.sort-container:hover {
+  background: linear-gradient(135deg, hsl(var(--b3)), hsl(var(--b2)));
+  box-shadow: 0 4px 12px hsla(var(--bc), 0.1);
+}
+
+/* Dark mode improvements */
+@media (prefers-color-scheme: dark) {
+  .comment-sort-select {
+    background-color: hsl(var(--b1));
+    color: hsl(var(--bc));
+    border-color: hsl(var(--b3));
+  }
+  
+  .comment-sort-select option {
+    background-color: hsl(var(--b1));
+    color: hsl(var(--bc));
+  }
+}
+
+/* Custom dropdown styling for sort feature - Enhanced with theme support */
+.custom-sort-dropdown {  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 9999 !important;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .custom-sort-dropdown {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+.custom-sort-dropdown button {
+  background-color: transparent !important;
+  color: #1f2937 !important;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+[data-theme="dark"] .custom-sort-dropdown button {
+  color: #f9fafb !important;
+}
+
+.custom-sort-dropdown button:hover {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="dark"] .custom-sort-dropdown button:hover {
+  background-color: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+.custom-sort-dropdown button.active {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Ensure the dropdown button has proper contrast */
+.sort-dropdown-button {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db !important;
+  min-height: 40px;
+  position: relative;
+}
+
+[data-theme="dark"] .sort-dropdown-button {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+.sort-dropdown-button:hover {
+  background-color: #f9fafb !important;
+  border-color: #9ca3af !important;
+}
+
+[data-theme="dark"] .sort-dropdown-button:hover {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+.sort-dropdown-button:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+  outline: none;
+}
+
+/* Animation for dropdown */
+.custom-sort-dropdown {
+  animation: dropdownSlideIn 0.2s ease-out;
+  transform-origin: top;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Enhanced sort container styling */
+.sort-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sort-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure comments section doesn't clip dropdown */
+.modern-comment-section {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* Ensure dropdown parent has proper positioning */
+.custom-sort-dropdown {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  min-width: 140px !important;
+  max-width: 200px !important;
+}
+
+/* Additional stacking context management */
+.modern-comment-section .sort-container {
+  isolation: isolate;
+}
+
+.modern-comment-section .sort-container .relative {
+  z-index: 10;
+}

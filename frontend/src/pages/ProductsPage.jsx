@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { Plus, Edit, Trash2, Package, MessageCircle, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Package, MessageCircle, Search, Mail } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
+import ProductInquiryForm from "../components/ProductInquiryForm";
 import toast from "react-hot-toast";
 
 const ProductsPage = () => {
@@ -12,7 +13,9 @@ const ProductsPage = () => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredProducts, setFilteredProducts] = useState([]);    useEffect(() => {
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [showInquiryForm, setShowInquiryForm] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);useEffect(() => {
         getAllProducts();
     }, [getAllProducts]);
 
@@ -32,11 +35,9 @@ const ProductsPage = () => {
         );
         
         setFilteredProducts(filtered);
-    }, [searchTerm, products]);
-
-    // Helper function to format pricing
+    }, [searchTerm, products]);    // Helper function to format pricing
     const formatPrice = (price) => {
-        if (!price) return "Contact for pricing";
+        if (!price) return null; // Return null for UI handling
         
         const currencySymbol = {
             USD: "$",
@@ -47,12 +48,12 @@ const ProductsPage = () => {
         try {
             // Check if contact for pricing is enabled
             if (price.contactForPrice) {
-                return "Contact for pricing";
+                return null; // Return null for UI handling
             }
 
             // Check if we have minimum value
             if (price.minValue === undefined || price.minValue === null) {
-                return "Contact for pricing";
+                return null; // Return null for UI handling
             }
 
             // If we have both min and max values, it's a range
@@ -64,7 +65,7 @@ const ProductsPage = () => {
             }
         } catch (error) {
             console.error("Error formatting price:", error, price);
-            return "Contact for pricing";
+            return null; // Return null for UI handling
         }
     };
 
@@ -257,13 +258,27 @@ const ProductsPage = () => {
                                     </Link>
                                     <p className="text-base-content/70 text-[10px] line-clamp-2 mb-2 leading-tight">
                                         {product.description}
-                                    </p>
-                                        {/* Pricing Information */}
+                                    </p>                                        {/* Pricing Information */}
                                     <div className="mt-1 p-1.5 bg-base-200/50 rounded-lg border border-base-300/50">
                                         <div className="text-[9px] text-base-content/60 uppercase tracking-wide mb-0.5 font-medium">Price</div>
-                                        <div className="text-xs font-bold text-primary">
-                                            {formatPrice(product.price)}
-                                        </div>
+                                        {product.price?.contactForPrice || !product.price?.minValue ? (
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setSelectedProduct(product);
+                                                    setShowInquiryForm(true);
+                                                }}
+                                                className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                                            >
+                                                <Mail size={10} className="inline-block" />
+                                                Contact for pricing
+                                            </button>
+                                        ) : (
+                                            <div className="text-xs font-bold text-primary">
+                                                {formatPrice(product.price)}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex items-center justify-between mt-1.5">                                        {/* Comment Feature Indicator */}
                                         <div className="flex items-center text-[9px]">
@@ -305,9 +320,7 @@ const ProductsPage = () => {
                             />
                         </div>
                     </div>
-                )}
-
-                {/* Edit Product Modal */}
+                )}                {/* Edit Product Modal */}
                 {editingProduct && (
                     <div className="modal modal-open">
                         <div className="modal-box max-w-2xl">
@@ -324,6 +337,36 @@ const ProductsPage = () => {
                                 product={editingProduct}
                                 onSuccess={() => setEditingProduct(null)}
                                 onCancel={() => setEditingProduct(null)}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Product Inquiry Modal */}
+                {showInquiryForm && selectedProduct && (
+                    <div className="modal modal-open">
+                        <div className="modal-box max-w-md">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold text-lg">Contact for Pricing</h3>
+                                <button
+                                    onClick={() => {
+                                        setShowInquiryForm(false);
+                                        setSelectedProduct(null);
+                                    }}
+                                    className="btn btn-sm btn-circle btn-ghost"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <p className="text-sm text-base-content/70 mb-4">
+                                Please fill out the form below to get pricing information for {selectedProduct.name}.
+                            </p>
+                            <ProductInquiryForm 
+                                product={selectedProduct}
+                                onClose={() => {
+                                    setShowInquiryForm(false);
+                                    setSelectedProduct(null);
+                                }}
                             />
                         </div>
                     </div>
