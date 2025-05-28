@@ -25,7 +25,7 @@ app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(cors({
-    origin: "http://31.97.49.55:5173",
+    origin: ["http://31.97.49.55:5173", "http://localhost:5173", "http://www.nanotechchemical.com"],
     credentials: true,
 }))
 
