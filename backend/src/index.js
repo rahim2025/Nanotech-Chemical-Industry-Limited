@@ -35,15 +35,16 @@ app.use(cors({
             "https://www.nanotechchemical.com"
         ];
         
-        if(allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
+        if(allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, origin); // Set the correct origin
         } else {
             console.log("Origin blocked by CORS:", origin);
-            callback(null, true); // Temporarily allow all origins while debugging
+            callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true
 }))
+
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
