@@ -5,6 +5,9 @@ import cors from "cors"
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
 
 import authRouter from "./routers/auth.router.js"
 import adminRouter from "./routers/admin.router.js"
@@ -29,23 +32,28 @@ app.use(cors({
         if(!origin) return callback(null, true);
         
         const allowedOrigins = [
-            "http://31.97.49.55:5173",
-            "https://31.97.49.55:5173",
-            "http://localhost:5173", 
-            "http://www.nanotechchemical.com",
             "https://www.nanotechchemical.com",
-            "http://nanotechchemical.com",
             "https://nanotechchemical.com"
         ];
+        
+        // In development mode, accept localhost origins
+        if (process.env.NODE_ENV !== 'production') {
+            allowedOrigins.push("http://localhost:5173");
+        }
         
         console.log("Request from origin:", origin);
         
         if(allowedOrigins.includes(origin)) {
             callback(null, origin); // Set the correct origin
         } else {
-            // For development, accept any origin temporarily
-            console.log("Origin not in allowed list, but allowing:", origin);
-            callback(null, origin);
+            // In production, reject non-allowed origins
+            if (process.env.NODE_ENV === 'production') {
+                console.log("Origin rejected in production mode:", origin);
+                return callback(new Error('CORS not allowed'), false);
+            } else {
+                console.log("Origin not in allowed list, but allowing in development:", origin);
+                callback(null, origin);
+            }
         }
     },
     credentials: true,
@@ -83,7 +91,43 @@ app.use("/api/inquiries",inquiryRouter)
 app.use("/api/notifications",notificationRouter)
 
 
-app.listen(5000, () => {
-    console.log("Server is running on port 5000");
-    connectDB();
-});
+const PORT = process.env.PORT || 5000;
+
+// For production setup
+if (process.env.NODE_ENV === 'production') {
+    try {
+        // Check if SSL certificates exist for HTTPS
+        const sslOptions = {
+            key: fs.readFileSync(process.env.SSL_KEY_PATH),
+            cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+        };
+
+        // Create and start HTTPS server with SSL
+        const httpsServer = https.createServer(sslOptions, app);
+        httpsServer.listen(PORT, () => {
+            console.log(`HTTPS Server running on port ${PORT} (production mode)`);
+            connectDB();
+        });
+
+        // Optional: Redirect HTTP to HTTPS
+        // This creates a simple HTTP server that redirects all traffic to HTTPS
+        const httpRedirectApp = express();
+        httpRedirectApp.use((req, res) => {
+            res.redirect(`https://${req.hostname}${req.url}`);
+        });
+        http.createServer(httpRedirectApp).listen(80, () => {
+            console.log('HTTP redirect server running on port 80');
+        });
+    } catch (error) {
+        console.error('Failed to start HTTPS server:', error.message);
+        console.log('Check your SSL certificate paths in .env file');
+        process.exit(1);
+    }
+} else {
+    // For development
+    const httpServer = http.createServer(app);
+    httpServer.listen(PORT, () => {
+        console.log(`HTTP Server running on port ${PORT} (${process.env.NODE_ENV} mode)`);
+        connectDB();
+    });
+}
