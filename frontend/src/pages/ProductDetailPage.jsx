@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useCommentStore } from "../store/useCommentStore";
+import { axiosInstance } from "../lib/axios";
 import "../styles/ProductDetailPage.css";
 import { 
     ArrowLeft, 
@@ -255,7 +256,16 @@ const ProductDetailPage = () => {
         const fetchRelatedProducts = async (currentProduct) => {
             setIsLoadingRelated(true);
             try {
-                const allProducts = await getAllProducts(true); // true to bypass state update
+                // Get products from the store state first, if not available fetch them
+                const { products } = useProductStore.getState();
+                let allProducts = products;
+                
+                // If no products in store, fetch them directly from API
+                if (!allProducts || allProducts.length === 0) {
+                    const res = await axiosInstance.get("/products");
+                    allProducts = res.data;
+                }
+                
                 if (allProducts) {
                     // Filter to get related products (same category or similar names)
                     const related = allProducts.filter(p => 
@@ -284,7 +294,7 @@ const ProductDetailPage = () => {
         return () => {
             clearComments();
         };
-    }, [productId, getProductById, navigate, getProductComments, clearComments, getAllProducts]);
+    }, [productId, getProductById, navigate, getProductComments, clearComments]);
 
     // Helper function to format pricing
     const formatPrice = (price) => {
@@ -914,10 +924,7 @@ const ProductDetailPage = () => {
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
-                                    <div className="grid grid-cols-2 border-b border-base-200 pb-2">
-                                        <span className="text-base-content/70 font-medium">Category</span>
-                                        <span>{product.category || 'N/A'}</span>
-                                    </div>
+
                                     <div className="grid grid-cols-2 border-b border-base-200 pb-2">
                                         <span className="text-base-content/70 font-medium">Availability</span>
                                         <span className={product.inStock ? 'text-success' : 'text-error'}>
@@ -941,8 +948,7 @@ const ProductDetailPage = () => {
                                         <span>{product.price?.unit || 'N/A'}</span>
                                     </div>
                                     <div className="grid grid-cols-2 border-b border-base-200 pb-2">
-                                        <span className="text-base-content/70 font-medium">Publisher</span>
-                                        <span>{product.createdBy?.fullName || 'Unknown'}</span>
+   
                                     </div>
                                 </div>
                             </div>

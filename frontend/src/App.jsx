@@ -34,7 +34,7 @@ const App = () =>{
       
       <Routes>
         <Route path="/" element={<ProductsPage/>}/>
-        <Route path="/home" element={<HomePage/>}/>
+        {/* <Route path="/home" element={<HomePage/>}/> */}
         <Route path="/about" element={<AboutUsPage/>}/>
         <Route path="/careers" element={<Career/>}/>
         <Route path="/login" element={!authUser? <LoginPage/> : <Navigate to= "/" />}/>
