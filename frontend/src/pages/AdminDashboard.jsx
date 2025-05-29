@@ -5,9 +5,11 @@ import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useCommentStore } from "../store/useCommentStore";
 import { useNotificationStore } from "../store/useNotificationStore";
-import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply } from "lucide-react";
+import useCareerStore from "../stores/useCareerStore";
+import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply, Briefcase, Clock } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import CommentItem from "../components/CommentItem";
+import CareerForm from "../components/CareerForm";
 
 const AdminDashboard = () => {
     const location = useLocation();
@@ -22,6 +24,13 @@ const AdminDashboard = () => {
         replyToComment,
         pagination: commentPagination 
     } = useCommentStore();
+    const { 
+        careers, 
+        isLoading: isLoadingCareers, 
+        fetchAllCareersAdmin, 
+        deleteCareer, 
+        toggleCareerStatus 
+    } = useCareerStore();
     
     const [filter, setFilter] = useState("all");
     
@@ -34,16 +43,19 @@ const AdminDashboard = () => {
     const [commentFilter, setCommentFilter] = useState("all");
     const [replyingTo, setReplyingTo] = useState(null);
     const [replyText, setReplyText] = useState("");
+    const [showCareerForm, setShowCareerForm] = useState(false);
+    const [editingCareer, setEditingCareer] = useState(null);
 
     useEffect(() => {
         getAllUsers();
         getAllProducts();
         getAllComments();
-    }, [getAllUsers, getAllProducts, getAllComments]);    // Update active tab when URL changes
+        fetchAllCareersAdmin();
+    }, [getAllUsers, getAllProducts, getAllComments, fetchAllCareersAdmin]);    // Update active tab when URL changes
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tabFromUrl = searchParams.get('tab');
-        if (tabFromUrl && ['users', 'products', 'comments', 'inquiries'].includes(tabFromUrl)) {
+        if (tabFromUrl && ['users', 'products', 'comments', 'inquiries', 'careers'].includes(tabFromUrl)) {
             setActiveTab(tabFromUrl);
         }
     }, [location.search]);// Handle tab change with URL update
@@ -79,7 +91,33 @@ const AdminDashboard = () => {
         if (commentFilter === "guests") return !comment.commenter;
         if (commentFilter === "users") return comment.commenter;
         return true;
-    });// Helper function to format pricing
+    });
+
+    // Career management functions
+    const handleDeleteCareer = async (careerId) => {
+        if (window.confirm("Are you sure you want to delete this career post? This action cannot be undone.")) {
+            await deleteCareer(careerId);
+        }
+    };
+
+    const handleToggleCareerStatus = async (careerId) => {
+        await toggleCareerStatus(careerId);
+    };
+
+    const handleEditCareer = (career) => {
+        setEditingCareer(career);
+        setShowCareerForm(true);
+    };
+
+    const handleCareerFormClose = () => {
+        setShowCareerForm(false);
+        setEditingCareer(null);
+    };
+
+    const handleCareerFormSuccess = () => {
+        // Refresh career list is handled by the store
+        handleCareerFormClose();
+    };// Helper function to format pricing
     const formatPrice = (price) => {
         if (!price) return "Contact for pricing";
         
@@ -157,7 +195,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div className="stat bg-primary text-primary-content rounded-lg">
                         <div className="stat-figure">
                             <Users className="w-8 h-8" />
@@ -179,7 +217,8 @@ const AdminDashboard = () => {
                             {products.filter(p => p.inStock).length} in stock
                         </div>
                     </div>
-                      <div className="stat bg-accent text-accent-content rounded-lg">
+
+                    <div className="stat bg-accent text-accent-content rounded-lg">
                         <div className="stat-figure">
                             <MessageCircle className="w-8 h-8" />
                         </div>
@@ -187,6 +226,17 @@ const AdminDashboard = () => {
                         <div className="stat-value">{comments.length}</div>
                         <div className="stat-desc text-accent-content/60">
                             {comments.filter(c => !c.adminReply?.text).length} pending replies
+                        </div>
+                    </div>
+
+                    <div className="stat bg-info text-info-content rounded-lg">
+                        <div className="stat-figure">
+                            <Briefcase className="w-8 h-8" />
+                        </div>
+                        <div className="stat-title text-info-content/80">Career Posts</div>
+                        <div className="stat-value">{careers.length}</div>
+                        <div className="stat-desc text-info-content/60">
+                            {careers.filter(c => c.isActive).length} active positions
                         </div>
                     </div>
                 </div>                {/* Tab Navigation */}
@@ -204,7 +254,15 @@ const AdminDashboard = () => {
                     >
                         <Package className="w-4 h-4" />
                         Product Management
-                    </button>                    <button
+                    </button>
+                    <button
+                        onClick={() => handleTabChange("careers")}
+                        className={`tab gap-2 ${activeTab === "careers" ? "tab-active" : ""}`}
+                    >
+                        <Briefcase className="w-4 h-4" />
+                        Career Management
+                    </button>
+                    <button
                         onClick={() => handleTabChange("comments")}
                         className={`tab gap-2 ${activeTab === "comments" ? "tab-active" : ""}`}
                     >
@@ -214,7 +272,8 @@ const AdminDashboard = () => {
                             <div className="badge badge-error badge-sm">
                                 {comments.filter(c => !c.adminReply?.text).length}
                             </div>
-                        )}                    </button>
+                        )}
+                    </button>
                     <Link
                         to="/admin/inquiries"
                         className="tab gap-2"
@@ -681,6 +740,178 @@ const AdminDashboard = () => {
                     </div>
                 )}
 
+                {/* Careers Tab */}
+                {activeTab === "careers" && (
+                    <div>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">Career Management</h2>
+                            <button
+                                onClick={() => setShowCareerForm(true)}
+                                className="btn btn-primary gap-2"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Add Career Post
+                            </button>
+                        </div>
+
+                        {isLoadingCareers ? (
+                            <div className="flex justify-center items-center min-h-[400px]">
+                                <div className="loading loading-spinner loading-lg"></div>
+                            </div>
+                        ) : careers.length === 0 ? (
+                            <div className="text-center py-16">
+                                <Briefcase className="w-16 h-16 mx-auto text-base-300 mb-4" />
+                                <h3 className="text-xl font-semibold mb-2">No career posts yet</h3>
+                                <p className="text-base-content/60 mb-6">Add your first career opportunity to get started!</p>
+                                <button
+                                    onClick={() => setShowCareerForm(true)}
+                                    className="btn btn-primary gap-2"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add First Career Post
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {careers.map((career) => (
+                                    <div key={career._id} className="bg-base-100 rounded-xl p-6 shadow-sm border border-base-300">
+                                        {/* Career Header */}
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <h3 className="text-xl font-bold text-primary">{career.title}</h3>
+                                                    <div className={`badge ${career.isActive ? 'badge-success' : 'badge-error'}`}>
+                                                        {career.isActive ? 'Active' : 'Inactive'}
+                                                    </div>
+                                                    {career.applicationDeadline && new Date(career.applicationDeadline) < new Date() && (
+                                                        <div className="badge badge-warning">Expired</div>
+                                                    )}
+                                                </div>
+                                                <p className="text-base-content/80 mb-3">{career.description}</p>
+                                                
+                                                <div className="flex flex-wrap gap-4 text-sm text-base-content/70">
+                                                    <div className="flex items-center gap-1">
+                                                        <Package className="w-4 h-4 text-secondary" />
+                                                        <span>{career.department}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <User className="w-4 h-4 text-accent" />
+                                                        <span>{career.location}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock className="w-4 h-4 text-info" />
+                                                        <span>{career.jobType}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <BarChart3 className="w-4 h-4 text-warning" />
+                                                        <span>{career.experienceLevel}</span>
+                                                    </div>
+                                                    {career.applicationDeadline && (
+                                                        <div className="flex items-center gap-1">
+                                                            <Calendar className="w-4 h-4 text-error" />
+                                                            <span>Deadline: {new Date(career.applicationDeadline).toLocaleDateString()}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Actions */}
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleToggleCareerStatus(career._id)}
+                                                    className={`btn btn-sm ${career.isActive ? 'btn-warning' : 'btn-success'}`}
+                                                    title={career.isActive ? 'Deactivate' : 'Activate'}
+                                                >
+                                                    {career.isActive ? <ShieldOff className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleEditCareer(career)}
+                                                    className="btn btn-sm btn-primary"
+                                                    title="Edit Career"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteCareer(career._id)}
+                                                    className="btn btn-sm btn-error"
+                                                    title="Delete Career"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Career Details */}
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-base-300">
+                                            {career.requirements && career.requirements.length > 0 && (
+                                                <div>
+                                                    <h4 className="font-semibold text-sm text-base-content/80 mb-2">Requirements</h4>
+                                                    <ul className="text-sm space-y-1">
+                                                        {career.requirements.slice(0, 3).map((req, idx) => (
+                                                            <li key={idx} className="flex items-start">
+                                                                <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 mt-2 flex-shrink-0"></span>
+                                                                <span className="text-base-content/70">{req}</span>
+                                                            </li>
+                                                        ))}
+                                                        {career.requirements.length > 3 && (
+                                                            <li className="text-sm text-base-content/60">
+                                                                +{career.requirements.length - 3} more...
+                                                            </li>
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                            
+                                            {career.responsibilities && career.responsibilities.length > 0 && (
+                                                <div>
+                                                    <h4 className="font-semibold text-sm text-base-content/80 mb-2">Responsibilities</h4>
+                                                    <ul className="text-sm space-y-1">
+                                                        {career.responsibilities.slice(0, 3).map((resp, idx) => (
+                                                            <li key={idx} className="flex items-start">
+                                                                <span className="w-1.5 h-1.5 bg-secondary rounded-full mr-2 mt-2 flex-shrink-0"></span>
+                                                                <span className="text-base-content/70">{resp}</span>
+                                                            </li>
+                                                        ))}
+                                                        {career.responsibilities.length > 3 && (
+                                                            <li className="text-sm text-base-content/60">
+                                                                +{career.responsibilities.length - 3} more...
+                                                            </li>
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            )}
+
+                                            <div>
+                                                <h4 className="font-semibold text-sm text-base-content/80 mb-2">Details</h4>
+                                                <div className="text-sm space-y-1">
+                                                    {career.salary && (career.salary.min || career.salary.max) && (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-base-content/60">Salary:</span>
+                                                            <span className="text-base-content/80 font-medium">
+                                                                {career.salary.currency} {career.salary.min ? career.salary.min.toLocaleString() : ''} 
+                                                                {career.salary.min && career.salary.max ? ' - ' : ''}
+                                                                {career.salary.max ? career.salary.max.toLocaleString() : ''}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base-content/60">Posted:</span>
+                                                        <span className="text-base-content/80">{new Date(career.createdAt).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base-content/60">By:</span>
+                                                        <span className="text-base-content/80">{career.postedBy?.username || 'Admin'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* Add Product Modal */}
                 {showAddProductForm && (
                     <div className="modal modal-open">
@@ -722,6 +953,15 @@ const AdminDashboard = () => {
                             />
                         </div>
                     </div>
+                )}
+
+                {/* Career Form Modal */}
+                {showCareerForm && (
+                    <CareerForm
+                        career={editingCareer}
+                        onClose={handleCareerFormClose}
+                        onSuccess={handleCareerFormSuccess}
+                    />
                 )}
             </div>
         </div>

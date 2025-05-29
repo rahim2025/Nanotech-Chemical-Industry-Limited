@@ -15,6 +15,8 @@ import productRouter from "./routers/product.router.js"
 import commentRouter from "./routers/comment.router.js"
 import inquiryRouter from "./routers/inquiry.router.js"
 import notificationRouter from "./routers/notification.router.js"
+import careerRouter from "./routers/career.router.js"
+import jobApplicationRouter from "./routers/jobApplication.router.js"
 import {connectDB} from "./lib/db.js"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -87,18 +89,15 @@ app.use((error, req, res, next) => {
     
     next(error);
 });
-
-// Add a simple test endpoint to verify CORS is working
-app.get('/api/cors-test', (req, res) => {
-    res.json({ message: 'CORS is working correctly' });
-});
-
+// Import routers
 app.use("/api/auth",authRouter)
 app.use("/api/admin",adminRouter)
 app.use("/api/products",productRouter)
 app.use("/api/comments",commentRouter)
 app.use("/api/inquiries",inquiryRouter)
 app.use("/api/notifications",notificationRouter)
+app.use("/api/careers",careerRouter)
+app.use("/api/job-applications",jobApplicationRouter)
 
 // Global error handler that preserves CORS headers
 app.use((err, req, res, next) => {
@@ -111,7 +110,7 @@ app.use((err, req, res, next) => {
 });
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT  || 5000;
 
 // For production setup
 if (process.env.NODE_ENV === 'production') {
@@ -129,15 +128,6 @@ if (process.env.NODE_ENV === 'production') {
             connectDB();
         });
 
-        // Optional: Redirect HTTP to HTTPS
-        // This creates a simple HTTP server that redirects all traffic to HTTPS
-        const httpRedirectApp = express();
-        httpRedirectApp.use((req, res) => {
-            res.redirect(`https://${req.hostname}${req.url}`);
-        });
-        http.createServer(httpRedirectApp).listen(80, () => {
-            console.log('HTTP redirect server running on port 80');
-        });
     } catch (error) {
         console.error('Failed to start HTTPS server:', error.message);
         console.log('Check your SSL certificate paths in .env file');

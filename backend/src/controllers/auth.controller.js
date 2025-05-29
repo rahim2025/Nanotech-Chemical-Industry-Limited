@@ -22,7 +22,8 @@ export const signup = async (req, res) => {
       fullName: userData.fullName,
       email: userData.email,
       password: hashedPassword
-    });    await newUser.save(); 
+    });    
+    await newUser.save(); 
     const token = genToken(newUser._id, res);
 
     console.log(newUser);

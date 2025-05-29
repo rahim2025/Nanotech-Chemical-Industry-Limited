@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard"
 import ProductsPage from "./pages/ProductsPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
 import AboutUsPage from "./pages/AboutUsPage"
+import Career from "./pages/Career"
 import InquiriesPage from "./pages/InquiriesPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
@@ -35,6 +36,7 @@ const App = () =>{
         <Route path="/" element={<ProductsPage/>}/>
         <Route path="/home" element={<HomePage/>}/>
         <Route path="/about" element={<AboutUsPage/>}/>
+        <Route path="/careers" element={<Career/>}/>
         <Route path="/login" element={!authUser? <LoginPage/> : <Navigate to= "/" />}/>
         <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to = "/"/> }/>
 

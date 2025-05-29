@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LogOut, User, Shield, Package, Home, Users } from "lucide-react";
+import { LogOut, User, Shield, Package, Home, Users, Briefcase } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
 export const Navbar = () => {
@@ -12,7 +12,8 @@ export const Navbar = () => {
     backdrop-blur-lg bg-base-100/80"
     >
       <div className="container mx-auto px-4 h-16">
-        <div className="flex items-center justify-between h-full">            <div className="flex items-center gap-8">
+        <div className="flex items-center justify-between h-full">            
+          <div className="flex items-center gap-8">
             <Link to="/home" className="flex items-center gap-2.5 hover:opacity-80 transition-all">
               <div className="size-9 rounded-full overflow-hidden bg-white border border-primary/20 shadow-sm">
                 <img 
@@ -21,7 +22,7 @@ export const Navbar = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h1 className="text-lg font-bold">NANOTECH CHEMICAL INDUSTRY LIMITED</h1>
+              <h1 className="text-lg font-bold">NANOTECH CHEMICAL</h1>
             </Link>              
             {/* Always visible navigation */}            
             <nav className="hidden md:flex items-center gap-4">
@@ -38,6 +39,13 @@ export const Navbar = () => {
               >
                 <Package className="w-4 h-4" />
                 Products
+              </Link>
+              <Link
+                to="/careers"
+                className="btn btn-sm btn-ghost gap-2"
+              >
+                <Briefcase className="w-4 h-4" />
+                Careers
               </Link>
               <Link
                 to="/about"
@@ -60,6 +68,14 @@ export const Navbar = () => {
             >
               <Package className="w-4 h-4" />
               <span className="hidden sm:inline">Products</span>
+            </Link>
+
+            <Link
+              to="/careers"
+              className="btn btn-sm gap-2 md:hidden"
+            >
+              <Briefcase className="w-4 h-4" />
+              <span className="hidden sm:inline">Careers</span>
             </Link>
             
             <Link
