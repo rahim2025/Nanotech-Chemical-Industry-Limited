@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt, FaClock, FaUsers, FaDollarSign, FaCalendarAlt, FaChevronDown, FaChevronUp, FaEnvelope } from 'react-icons/fa';
-import useCareerStore from '../stores/useCareerStore';
+import useCareerStore from '../store/useCareerStore';
 
 const Career = () => {
     const { careers, isLoading, fetchCareers } = useCareerStore();

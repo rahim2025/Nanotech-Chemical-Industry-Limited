@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LogOut, User, Shield, Package, Home, Users, Briefcase, Menu, X } from "lucide-react";
+import { LogOut, User, Shield, Package, Home, Users, Briefcase, Menu, X, Phone } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 import { useState } from "react";
 
@@ -50,6 +50,13 @@ export const Navbar = () => {
                 <Package className="w-4 h-4" />
                 Products
               </Link>
+                           <Link
+                to="/about"
+                className="btn btn-sm btn-ghost gap-2"
+              >
+                <Users className="w-4 h-4" />
+                About Us
+              </Link>
               <Link
                 to="/careers"
                 className="btn btn-sm btn-ghost gap-2"
@@ -58,14 +65,16 @@ export const Navbar = () => {
                 Careers
               </Link>
               <Link
-                to="/about"
+                to="/contact"
                 className="btn btn-sm btn-ghost gap-2"
               >
-                <Users className="w-4 h-4" />
-                About Us
+                <Phone className="w-4 h-4" />
+                Contact
               </Link>
+ 
             </nav>
-          </div>          <div className="flex items-center gap-1 sm:gap-2">
+          </div>          
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Mobile Menu Button */}
             <button
               className="btn btn-sm btn-ghost md:hidden"
@@ -133,6 +142,14 @@ export const Navbar = () => {
               >
                 <Briefcase className="w-4 h-4" />
                 Careers
+              </Link>
+              <Link
+                to="/contact"
+                className="btn btn-sm btn-ghost justify-start gap-2"
+                onClick={closeMobileMenu}
+              >
+                <Phone className="w-4 h-4" />
+                Contact
               </Link>
               <Link
                 to="/about"

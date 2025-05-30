@@ -1,7 +1,13 @@
 import axios from "axios"
 
-// Determine the appropriate API URL based on the current hostname
+// Determine the appropriate API URL based on environment
 const getApiUrl = () => {
+    // Use environment variable if available
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+    
+    // Fallback to hostname-based detection
     const hostname = window.location.hostname;
     
     // If we're on the production site

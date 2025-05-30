@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes, FaPlus, FaMinus } from 'react-icons/fa';
-import useCareerStore from '../stores/useCareerStore';
+import useCareerStore from '../store/useCareerStore';
 
 const CareerForm = ({ career = null, onClose, onSuccess }) => {
     const { createCareer, updateCareer, isLoading } = useCareerStore();

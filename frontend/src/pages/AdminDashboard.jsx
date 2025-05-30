@@ -5,8 +5,9 @@ import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useCommentStore } from "../store/useCommentStore";
 import { useNotificationStore } from "../store/useNotificationStore";
-import useCareerStore from "../stores/useCareerStore";
-import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply, Briefcase, Clock } from "lucide-react";
+import useCareerStore from "../store/useCareerStore";
+import useContactStore from "../store/useContactStore";
+import { Users, Shield, ShieldOff, Trash2, User, Crown, Package, Plus, Edit, BarChart3, Eye, MessageCircle, Calendar, Mail, Reply, Briefcase, Clock, Phone } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import CommentItem from "../components/CommentItem";
 import CareerForm from "../components/CareerForm";
@@ -32,6 +33,14 @@ const AdminDashboard = () => {
         toggleCareerStatus 
     } = useCareerStore();
     
+    const { 
+        contacts, 
+        isLoading: isLoadingContacts, 
+        getAllContacts, 
+        deleteContact,
+        markContactAsRead 
+    } = useContactStore();
+    
     const [filter, setFilter] = useState("all");
     
     // Get tab from URL params or default to "users"
@@ -45,17 +54,19 @@ const AdminDashboard = () => {
     const [replyText, setReplyText] = useState("");
     const [showCareerForm, setShowCareerForm] = useState(false);
     const [editingCareer, setEditingCareer] = useState(null);
+    const [contactFilter, setContactFilter] = useState("all");
 
     useEffect(() => {
         getAllUsers();
         getAllProducts();
         getAllComments();
         fetchAllCareersAdmin();
-    }, [getAllUsers, getAllProducts, getAllComments, fetchAllCareersAdmin]);    // Update active tab when URL changes
+        getAllContacts();
+    }, [getAllUsers, getAllProducts, getAllComments, fetchAllCareersAdmin, getAllContacts]);    // Update active tab when URL changes
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tabFromUrl = searchParams.get('tab');
-        if (tabFromUrl && ['users', 'products', 'comments', 'inquiries', 'careers'].includes(tabFromUrl)) {
+        if (tabFromUrl && ['users', 'products', 'comments', 'inquiries', 'careers', 'contacts'].includes(tabFromUrl)) {
             setActiveTab(tabFromUrl);
         }
     }, [location.search]);// Handle tab change with URL update
@@ -117,7 +128,26 @@ const AdminDashboard = () => {
     const handleCareerFormSuccess = () => {
         // Refresh career list is handled by the store
         handleCareerFormClose();
-    };// Helper function to format pricing
+    };
+
+    // Contact management functions
+    const handleDeleteContact = async (contactId) => {
+        if (window.confirm("Are you sure you want to delete this contact message? This action cannot be undone.")) {
+            await deleteContact(contactId);
+        }
+    };
+
+    const handleMarkAsRead = async (contactId) => {
+        await markContactAsRead(contactId);
+    };
+
+    // Filter contacts based on selected filter
+    const filteredContacts = contacts?.filter(contact => {
+        if (contactFilter === "all") return true;
+        if (contactFilter === "read") return contact.isRead;
+        if (contactFilter === "unread") return !contact.isRead;
+        return true;
+    }) || [];// Helper function to format pricing
     const formatPrice = (price) => {
         if (!price) return "Contact for pricing";
         
@@ -195,7 +225,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
                     <div className="stat bg-primary text-primary-content rounded-lg">
                         <div className="stat-figure">
                             <Users className="w-8 h-8" />
@@ -239,6 +269,17 @@ const AdminDashboard = () => {
                             {careers.filter(c => c.isActive).length} active positions
                         </div>
                     </div>
+
+                    <div className="stat bg-emerald-600 text-white rounded-lg">
+                        <div className="stat-figure">
+                            <Phone className="w-8 h-8" />
+                        </div>
+                        <div className="stat-title text-white/80">Contact Messages</div>
+                        <div className="stat-value">{contacts?.length || 0}</div>
+                        <div className="stat-desc text-white/60">
+                            {contacts?.filter(c => !c.isRead).length || 0} unread
+                        </div>
+                    </div>
                 </div>                {/* Tab Navigation */}
                 <div className="tabs tabs-boxed mb-6">
                     <button
@@ -261,6 +302,18 @@ const AdminDashboard = () => {
                     >
                         <Briefcase className="w-4 h-4" />
                         Career Management
+                    </button>
+                    <button
+                        onClick={() => handleTabChange("contacts")}
+                        className={`tab gap-2 ${activeTab === "contacts" ? "tab-active" : ""}`}
+                    >
+                        <Phone className="w-4 h-4" />
+                        Contact Messages
+                        {contacts?.filter(c => !c.isRead).length > 0 && (
+                            <div className="badge badge-error badge-sm">
+                                {contacts?.filter(c => !c.isRead).length}
+                            </div>
+                        )}
                     </button>
                     <button
                         onClick={() => handleTabChange("comments")}
@@ -903,6 +956,121 @@ const AdminDashboard = () => {
                                                         <span className="text-base-content/80">{career.postedBy?.username || 'Admin'}</span>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Contact Messages Tab */}
+                {activeTab === "contacts" && (
+                    <div>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">Contact Messages</h2>
+                            
+                            {/* Filter Controls */}
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setContactFilter("all")}
+                                    className={`btn btn-sm ${contactFilter === "all" ? "btn-primary" : "btn-outline"}`}
+                                >
+                                    All ({contacts?.length || 0})
+                                </button>
+                                <button
+                                    onClick={() => setContactFilter("unread")}
+                                    className={`btn btn-sm ${contactFilter === "unread" ? "btn-primary" : "btn-outline"}`}
+                                >
+                                    Unread ({contacts?.filter(c => !c.isRead).length || 0})
+                                </button>
+                                <button
+                                    onClick={() => setContactFilter("read")}
+                                    className={`btn btn-sm ${contactFilter === "read" ? "btn-primary" : "btn-outline"}`}
+                                >
+                                    Read ({contacts?.filter(c => c.isRead).length || 0})
+                                </button>
+                            </div>
+                        </div>
+
+                        {isLoadingContacts ? (
+                            <div className="flex justify-center py-8">
+                                <div className="loading loading-spinner loading-lg"></div>
+                            </div>
+                        ) : filteredContacts.length === 0 ? (
+                            <div className="text-center py-12">
+                                <Phone className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                                <h3 className="text-xl font-semibold text-gray-600 mb-2">No Contact Messages</h3>
+                                <p className="text-gray-400">No contact messages found matching your filter.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {filteredContacts.map((contact) => (
+                                    <div
+                                        key={contact._id}
+                                        className={`card shadow-lg transition-all duration-200 hover:shadow-xl ${
+                                            contact.isRead ? 'bg-base-100' : 'bg-blue-50 border-l-4 border-l-blue-500'
+                                        }`}
+                                    >
+                                        <div className="card-body">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <h3 className="text-lg font-semibold text-blue-900">
+                                                            {contact.name}
+                                                        </h3>
+                                                        {!contact.isRead && (
+                                                            <div className="badge bg-blue-600 text-white border-blue-600">Unread</div>
+                                                        )}
+                                                        <div className="badge badge-outline border-blue-400 text-blue-700">
+                                                            {contact.subject}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-4 text-sm text-blue-600 mb-3">
+                                                        <div className="flex items-center gap-1">
+                                                            <Mail className="w-4 h-4" />
+                                                            <a href={`mailto:${contact.email}`} className="hover:text-blue-800">
+                                                                {contact.email}
+                                                            </a>
+                                                        </div>
+                                                        {contact.phone && (
+                                                            <div className="flex items-center gap-1">
+                                                                <Phone className="w-4 h-4" />
+                                                                <a href={`tel:${contact.phone}`} className="hover:text-blue-800">
+                                                                    {contact.phone}
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-1">
+                                                            <Calendar className="w-4 h-4" />
+                                                            <span>{new Date(contact.createdAt).toLocaleDateString()}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    {!contact.isRead && (
+                                                        <button
+                                                            onClick={() => handleMarkAsRead(contact._id)}
+                                                            className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                                                            title="Mark as Read"
+                                                        >
+                                                            <Eye className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => handleDeleteContact(contact._id)}
+                                                        className="btn btn-sm btn-error"
+                                                        title="Delete Contact"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                                <h4 className="font-medium text-blue-900 mb-2">Message:</h4>
+                                                <p className="text-blue-800 whitespace-pre-wrap">{contact.message}</p>
                                             </div>
                                         </div>
                                     </div>

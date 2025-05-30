@@ -17,6 +17,7 @@ import inquiryRouter from "./routers/inquiry.router.js"
 import notificationRouter from "./routers/notification.router.js"
 import careerRouter from "./routers/career.router.js"
 import jobApplicationRouter from "./routers/jobApplication.router.js"
+import contactRouter from "./routers/contact.router.js"
 import {connectDB} from "./lib/db.js"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,10 +60,9 @@ app.use(cors({
                 console.log("Origin not in allowed list, but allowing in development:", origin);
                 callback(null, true);
             }
-        }
-    },
+        }    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['set-cookie']
 }))
@@ -98,6 +98,7 @@ app.use("/api/inquiries",inquiryRouter)
 app.use("/api/notifications",notificationRouter)
 app.use("/api/careers",careerRouter)
 app.use("/api/job-applications",jobApplicationRouter)
+app.use("/api/contact",contactRouter)
 
 // Global error handler that preserves CORS headers
 app.use((err, req, res, next) => {

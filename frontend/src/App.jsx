@@ -10,6 +10,7 @@ import ProductsPage from "./pages/ProductsPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
 import AboutUsPage from "./pages/AboutUsPage"
 import Career from "./pages/Career"
+import ContactPage from "./pages/ContactPage"
 import InquiriesPage from "./pages/InquiriesPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
@@ -37,6 +38,7 @@ const App = () =>{
         {/* <Route path="/home" element={<HomePage/>}/> */}
         <Route path="/about" element={<AboutUsPage/>}/>
         <Route path="/careers" element={<Career/>}/>
+        <Route path="/contact" element={<ContactPage/>}/>
         <Route path="/login" element={!authUser? <LoginPage/> : <Navigate to= "/" />}/>
         <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to = "/"/> }/>
 
