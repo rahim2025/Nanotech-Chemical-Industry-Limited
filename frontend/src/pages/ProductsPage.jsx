@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
+import SEO from "../components/SEO";
 import { Plus, Edit, Trash2, Package, MessageCircle, Search, Mail } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import ProductInquiryForm from "../components/ProductInquiryForm";
@@ -106,7 +107,14 @@ const ProductsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-200 pt-20">
+        <>
+            <SEO 
+                title="Industrial & Research Chemicals - Products"
+                description="Explore our comprehensive range of high-quality industrial chemicals, research chemicals, and custom chemical solutions. Premium chemical products for various industries."
+                keywords="industrial chemicals, research chemicals, chemical products, chemical solutions, laboratory chemicals, bulk chemicals, specialty chemicals"
+                url="https://nanotechchemical.com/products"
+            />
+            <div className="min-h-screen bg-base-200 pt-20">
             <div className="container mx-auto px-4">
                 {/* Welcome Banner for non-logged-in users */}
                 {!isLoggedIn && (
@@ -373,6 +381,7 @@ const ProductsPage = () => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

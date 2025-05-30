@@ -25,14 +25,14 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-full">            
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-all">
-              <div className="size-9 rounded-full overflow-hidden bg-white border border-primary/20 shadow-sm">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-white border border-primary/20 shadow-sm flex-shrink-0">
                 <img 
                   src="/logo.png" 
                   alt="Nanotech Chemical Logo" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                 />
               </div>
-              <h1 className="text-lg font-bold">NANOTECH CHEMICAL</h1>
+              <h1 className="text-base sm:text-lg font-bold truncate">NANOTECH CHEMICAL</h1>
             </Link>              
             {/* Always visible navigation */}            
             <nav className="hidden md:flex items-center gap-4">

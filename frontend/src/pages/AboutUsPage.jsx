@@ -1,8 +1,16 @@
 import { MapPin, Phone, Mail, Globe, Building, Users, Target } from "lucide-react";
+import SEO from "../components/SEO";
 
 const AboutUsPage = () => {
   return (
-    <div className="container mx-auto px-4 pt-20 pb-10">
+    <>
+      <SEO 
+        title="About Us - Leading Chemical Manufacturing Company"
+        description="Learn about Nanotech Chemical Industry Limited - a premier chemical manufacturing company with offices in Guangzhou and Hong Kong, specializing in industrial and research chemicals."
+        keywords="about nanotech chemical, chemical company, chemical manufacturing company, Guangzhou chemicals, Hong Kong chemicals, chemical industry experience"
+        url="https://nanotechchemical.com/about"
+      />
+      <div className="container mx-auto px-4 pt-20 pb-10">
       <div className="max-w-5xl mx-auto">
         {/* Header with logo and company name */}
         <div className="flex flex-col items-center justify-center mb-10">
@@ -172,6 +180,7 @@ const AboutUsPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

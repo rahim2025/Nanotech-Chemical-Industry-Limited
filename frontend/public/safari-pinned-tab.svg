@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-W3CDTD SVG 20010904EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="100.000000pt" height="100.000000pt" viewBox="0 0 100.000000 100.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created for Nanotech Chemical Industry Limited
+</metadata>
+<g transform="translate(0.000000,100.000000) scale(0.100000,-0.100000)"
+fill="#0d47a1" stroke="none">
+<path d="M200 800 c0 -100 200 -200 300 -200 s300 100 300 200 c0 100 -200 200 -300 200 s-300 -100 -300 -200z"/>
+<text x="50%" y="55%" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">NC</text>
+</g>
+</svg>

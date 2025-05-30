@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import { 
   MapPin, 
   Phone, 
@@ -91,11 +92,17 @@ const ContactPage = () => {
         "Sunday: Closed",
         "China Standard Time (CST)"
       ]
-    }
-  ];
+    }  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <>
+      <SEO 
+        title="Contact Us - Get in Touch"
+        description="Contact Nanotech Chemical Industry Limited. Reach our offices in Guangzhou and Hong Kong. Get quotes, technical support, and product information."
+        keywords="contact nanotech chemical, chemical company contact, Guangzhou office, Hong Kong office, chemical supplier contact"
+        url="https://nanotechchemical.com/contact"
+      />
+      <div className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
         <div className="container mx-auto px-4 text-center">
@@ -318,9 +325,9 @@ const ContactPage = () => {
               </div>
             </div>
           </div>
-        </motion.div>
-      </div>
+        </motion.div>      </div>
     </div>
+    </>
   );
 };
 

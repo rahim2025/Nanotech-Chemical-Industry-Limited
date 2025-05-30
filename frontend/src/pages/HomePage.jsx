@@ -1,10 +1,64 @@
 import ProductCarousel from '../components/ProductCarousel';
+import SEO from '../components/SEO';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HomePage = () => {
+  const homeSchemaData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Nanotech Chemical Industry Limited",
+    "alternateName": "Nanotech Chemical",
+    "url": "https://nanotechchemical.com",
+    "logo": "https://nanotechchemical.com/logo.png",
+    "description": "Premier chemical manufacturing company specializing in high-quality industrial chemicals, research chemicals, and custom chemical solutions.",
+    "foundingDate": "2020",
+    "industry": "Chemical Manufacturing",
+    "address": [
+      {
+        "@type": "PostalAddress",
+        "streetAddress": "Room 1501, 15/F, Tower B, Billion Centre",
+        "addressLocality": "Kwun Tong",
+        "addressRegion": "Kowloon",
+        "addressCountry": "Hong Kong"
+      },
+      {
+        "@type": "PostalAddress",
+        "streetAddress": "Room 2301, 23/F, China Merchants Tower",
+        "addressLocality": "Tianhe District",
+        "addressRegion": "Guangzhou",
+        "addressCountry": "China"
+      }
+    ],
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+852 3175 1234",
+        "contactType": "Customer Service",
+        "areaServed": "HK"
+      },
+      {
+        "@type": "ContactPoint",
+        "telephone": "+86 20 8888 9999",
+        "contactType": "Customer Service",
+        "areaServed": "CN"
+      }
+    ],
+    "email": "info@nanotechchemical.com",
+    "sameAs": [
+      "https://nanotechchemical.com"
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-base-200 pt-20">
+    <>
+      <SEO 
+        title="Nanotech Chemical Industry Limited - Leading Chemical Manufacturing Company"
+        description="Premier chemical manufacturing company specializing in high-quality industrial chemicals, research chemicals, and custom chemical solutions. Located in Guangzhou and Hong Kong."
+        url="https://nanotechchemical.com/"
+        schemaData={homeSchemaData}
+      />
+      <div className="min-h-screen bg-base-200 pt-20">
       {/* Featured Products - Moved to top, right below navbar */}
       <section className="py-4 bg-gradient-to-r from-base-100 via-base-200 to-base-100 border-b border-base-300">
         <div className="container mx-auto px-4">
@@ -66,6 +120,7 @@ const HomePage = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 export default HomePage;
