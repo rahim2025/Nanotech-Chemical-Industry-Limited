@@ -6,8 +6,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import http from 'http';
-import https from 'https';
-import fs from 'fs';
 
 import authRouter from "./routers/auth.router.js"
 import adminRouter from "./routers/admin.router.js"
@@ -27,8 +25,8 @@ const app = express();
 
 // Middleware
 app.use(cookieParser())
-app.use(express.json({ limit: '10mb' }))
-app.use(express.urlencoded({ limit: '10mb', extended: true }))
+app.use(express.json({ limit: '15mb' }))
+app.use(express.urlencoded({ limit: '15mb', extended: true }))
 
 // CORS configuration
 const allowedOrigins = [
@@ -42,31 +40,97 @@ if (process.env.NODE_ENV !== 'production') {
     allowedOrigins.push("http://localhost:3000");
 }
 
+console.log("CORS allowedOrigins:", allowedOrigins);
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
+// Single, comprehensive CORS middleware that works with all browsers including Brave
 app.use(cors({
     origin: function(origin, callback) {
-        // Allow requests with no origin (like mobile apps, curl requests)
-        if(!origin) return callback(null, true);
+        // Only log when there's an actual origin (reduces noise)
+        if (origin) {
+            console.log("CORS: Request from origin:", origin);
+        }
         
-        console.log("Request from origin:", origin);
+        // Allow requests with no origin (same-origin requests, mobile apps, curl requests, etc.)
+        if (!origin) {
+            return callback(null, true);
+        }
         
-        if(allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true); // Allow the specific origin
-        } else {
-            // In production, reject non-allowed origins
-            if (process.env.NODE_ENV === 'production') {
-                console.log("Origin rejected in production mode:", origin);
-                return callback(new Error('CORS not allowed'), false);
-            } else {
-                console.log("Origin not in allowed list, but allowing in development:", origin);
-                callback(null, true);
-            }
-        }    },
+        // Check if origin is in allowed list
+        if (allowedOrigins.includes(origin)) {
+            console.log("CORS: Origin allowed:", origin);
+            return callback(null, true); // Let cors middleware handle the origin properly
+        }
+        
+        // In development, allow all origins
+        if (process.env.NODE_ENV !== 'production') {
+            console.log("CORS: Development mode, allowing origin:", origin);
+            return callback(null, true);
+        }
+        
+        // In production, reject non-allowed origins
+        console.log("CORS: Origin rejected in production mode:", origin);
+        return callback(new Error('CORS policy: Origin not allowed'), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['set-cookie']
-}))
+    allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'X-Requested-With', 
+        'Accept', 
+        'Origin', 
+        'Cache-Control', 
+        'X-Forwarded-For',
+        'pragma',
+        'Pragma',
+        'User-Agent',
+        'DNT',
+        'If-Modified-Since',
+        'Keep-Alive',
+        'If-None-Match',
+        'Accept-Encoding',
+        'Accept-Language',
+        'Connection'
+    ],
+    exposedHeaders: ['set-cookie'],
+    optionsSuccessStatus: 200,
+    maxAge: 86400, // 24 hours cache for preflight - helps with consistency
+    preflightContinue: false
+}));
 
+// Anti-cache middleware specifically for Brave browser compatibility
+app.use((req, res, next) => {
+    // Force fresh CORS responses for all browsers, especially Brave
+    if (req.method === 'OPTIONS') {
+        res.header('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        res.header('Pragma', 'no-cache');
+        res.header('Expires', '0');
+        res.header('Vary', 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+    }
+    next();
+});
+
+// Debug middleware to log requests and CORS headers (only in development)
+if (process.env.NODE_ENV !== 'production') {
+    app.use((req, res, next) => {
+        // Only log API requests and important routes
+        if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+            console.log(`${req.method} ${req.path} from origin: ${req.headers.origin || 'no-origin'}`);
+        }
+        
+        // Log request headers for debugging preflight requests only
+        if (req.method === 'OPTIONS' && req.headers.origin) {
+            console.log('Preflight request headers:', {
+                'access-control-request-method': req.headers['access-control-request-method'],
+                'access-control-request-headers': req.headers['access-control-request-headers'],
+                'origin': req.headers.origin
+            });
+        }
+        
+        next();
+    });
+}
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -76,7 +140,7 @@ app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
-                message: 'File too large. Maximum size is 10MB.'
+                message: 'File too large. Maximum size is 15MB.'
             });
         }
     }
@@ -89,6 +153,7 @@ app.use((error, req, res, next) => {
     
     next(error);
 });
+
 // Import routers
 app.use("/api/auth",authRouter)
 app.use("/api/admin",adminRouter)
@@ -110,35 +175,12 @@ app.use((err, req, res, next) => {
     });
 });
 
+const PORT = process.env.PORT || 8080;
 
-const PORT = process.env.PORT  || 5000;
-
-// For production setup
-if (process.env.NODE_ENV === 'production') {
-    try {
-        // Check if SSL certificates exist for HTTPS
-        const sslOptions = {
-            key: fs.readFileSync(process.env.SSL_KEY_PATH),
-            cert: fs.readFileSync(process.env.SSL_CERT_PATH)
-        };
-
-        // Create and start HTTPS server with SSL
-        const httpsServer = https.createServer(sslOptions, app);
-        httpsServer.listen(PORT, () => {
-            console.log(`HTTPS Server running on port ${PORT} (production mode)`);
-            connectDB();
-        });
-
-    } catch (error) {
-        console.error('Failed to start HTTPS server:', error.message);
-        console.log('Check your SSL certificate paths in .env file');
-        process.exit(1);
-    }
-} else {
-    // For development
-    const httpServer = http.createServer(app);
-    httpServer.listen(PORT, () => {
-        console.log(`HTTP Server running on port ${PORT} (${process.env.NODE_ENV} mode)`);
-        connectDB();
-    });
-}
+// Start HTTP server - SSL is handled by Nginx + Certbot
+const httpServer = http.createServer(app);
+httpServer.listen(PORT, () => {
+    console.log(`HTTP Server running on port ${PORT} (${process.env.NODE_ENV || 'development'} mode)`);
+    console.log('SSL/HTTPS is handled by Nginx with Certbot certificates');
+    connectDB();
+});

@@ -296,6 +296,33 @@ const ProductDetailPage = () => {
         };
     }, [productId, getProductById, navigate, getProductComments, clearComments]);
 
+    // Handle hash navigation (e.g., when coming from reviews button)
+    useEffect(() => {
+        const handleHashNavigation = () => {
+            const hash = window.location.hash;
+            if (hash === '#comments') {
+                // Wait for the component to fully render and comments to load
+                setTimeout(() => {
+                    const commentsSection = document.getElementById('comments');
+                    if (commentsSection) {
+                        commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        setActiveTab('comments');
+                    }
+                }, 500); // Increased delay to ensure comments are loaded
+            }
+        };
+
+        // Handle hash on page load
+        handleHashNavigation();
+
+        // Handle hash changes (if user navigates using browser back/forward)
+        window.addEventListener('hashchange', handleHashNavigation);
+        
+        return () => {
+            window.removeEventListener('hashchange', handleHashNavigation);
+        };
+    }, [product, comments]); // Depend on product and comments to ensure they're loaded
+
     // Helper function to format pricing
     const formatPrice = (price) => {
         if (!price) return "Contact for pricing";
@@ -551,7 +578,9 @@ const ProductDetailPage = () => {
     const scrollToSection = (sectionId) => {
         const section = document.getElementById(sectionId);
         if (section) {
-            section.scrollIntoView({ behavior: 'smooth' });
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Update URL hash without triggering a page reload
+            window.history.replaceState(null, null, `#${sectionId}`);
         }
         setActiveTab(sectionId);
     };
@@ -778,8 +807,7 @@ const ProductDetailPage = () => {
                                         {/* Creator Info */}
                                         <div className="flex flex-wrap items-center gap-3 text-sm text-base-content/70">
                                             <div className="flex items-center gap-1.5">
-                                                <User size={14} className="text-primary"/>
-                                                <span>{product.createdBy?.fullName || 'Unknown'}</span>
+                                                
                                             </div>
                                             <span>•</span>
                                             <div className="flex items-center gap-1.5">

@@ -288,13 +288,16 @@ const ProductsPage = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex items-center justify-between mt-1.5">                                        {/* Comment Feature Indicator */}
+                                    <div className="flex items-center justify-between mt-1.5">                                        {/* Comment Feature Indicator - Now Clickable */}
                                         <div className="flex items-center text-[9px]">
-                                            <div className="tooltip tooltip-top" data-tip="Reviews & Comments Available">
-                                                <span className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 hover:bg-primary/20 transition-all duration-300 group-hover:scale-105">
+                                            <div className="tooltip tooltip-top" data-tip="View Reviews & Comments">
+                                                <Link 
+                                                    to={`/products/${product._id}#comments`}
+                                                    className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20 hover:bg-primary/20 transition-all duration-300 group-hover:scale-105 cursor-pointer hover:shadow-sm"
+                                                >
                                                     <MessageCircle size={10} className="text-primary animate-pulse" />
                                                     Reviews
-                                                </span>
+                                                </Link>
                                             </div>
                                         </div>                                        <Link 
                                             to={`/products/${product._id}`}
