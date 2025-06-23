@@ -38,3 +38,11 @@ coverage/
 
 # Optional eslint cache
 .eslintcache
+
+# Uploads directory (handled by symlink on server)
+backend/uploads/
+uploads/
+
+# Backup files
+*.backup
+*.bak

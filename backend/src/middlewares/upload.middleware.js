@@ -6,9 +6,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Persistent uploads directory outside project (won't be affected by git updates)
+const PERSISTENT_UPLOADS_PATH = '/var/uploads/nanotech-chemical';
+
 // Create upload directories if they don't exist
 const createUploadDir = (category) => {
-    const uploadDir = path.join(__dirname, `../../uploads/${category}`);
+    // Use persistent path instead of project path
+    const uploadDir = path.join(PERSISTENT_UPLOADS_PATH, category);
     if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -69,7 +73,7 @@ export const getFilePathFromUrl = (imageUrl, baseUrl) => {
     if (!imageUrl || !imageUrl.includes('/uploads/')) return null;
     
     const relativePath = imageUrl.split('/uploads/')[1];
-    return path.join(__dirname, '../../uploads', relativePath);
+    return path.join(PERSISTENT_UPLOADS_PATH, relativePath);
 };
 
 export default upload;

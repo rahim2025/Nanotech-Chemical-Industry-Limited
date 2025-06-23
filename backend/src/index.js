@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from "dotenv"
+dotenv.config();
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import path from 'path';
@@ -132,8 +133,8 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Serve static files from persistent uploads directory (outside project)
+app.use('/uploads', express.static('/var/uploads/nanotech-chemical'));
 
 // Multer error handling middleware
 app.use((error, req, res, next) => {
@@ -175,7 +176,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 // Start HTTP server - SSL is handled by Nginx + Certbot
 const httpServer = http.createServer(app);
