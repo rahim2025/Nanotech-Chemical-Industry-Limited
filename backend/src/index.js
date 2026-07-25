@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from "dotenv"
-dotenv.config();
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import path from 'path';
@@ -8,6 +7,10 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import http from 'http';
 
+// Load .env from this file's directory explicitly — process.cwd() is unreliable
+// under pm2 (it runs with the project root as cwd, not backend/), which previously
+// caused MONGO_URI to silently resolve to undefined.
+dotenv.config({ path: path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '.env') });
 import authRouter from "./routers/auth.router.js"
 import adminRouter from "./routers/admin.router.js"
 import productRouter from "./routers/product.router.js"
@@ -21,7 +24,6 @@ import {connectDB} from "./lib/db.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config();
 const app = express();
 
 // Middleware
