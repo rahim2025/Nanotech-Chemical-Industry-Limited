@@ -18,7 +18,6 @@ import {
     Trash2,
     CheckCircle,
     XCircle,
-    Mail,
     Info,
     FileText,
     Grid3X3,
@@ -42,6 +41,7 @@ import toast from "react-hot-toast";
 import CommentForm from "../components/CommentForm";
 import CommentItem from "../components/CommentItem";
 import ProductInquiryForm from "../components/ProductInquiryForm";
+import ContactPricingInfo from "../components/ContactPricingInfo";
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
@@ -823,13 +823,19 @@ const ProductDetailPage = () => {
                                             <Package size={18} className="text-primary" />
                                             <h3 className="text-lg font-semibold">Pricing Information</h3>
                                         </div>
-                                        <div className="text-2xl lg:text-3xl font-bold text-primary">
-                                            {formatPrice(product.price)}
-                                        </div>
-                                        {product.price?.unit && !product.price?.contactForPrice && (
-                                            <div className="text-sm text-base-content/60 mt-1">
-                                                Price per {product.price.unit}
-                                            </div>
+                                        {product.price?.contactForPrice || !product.price?.minValue ? (
+                                            <ContactPricingInfo />
+                                        ) : (
+                                            <>
+                                                <div className="text-2xl lg:text-3xl font-bold text-primary">
+                                                    {formatPrice(product.price)}
+                                                </div>
+                                                {product.price?.unit && (
+                                                    <div className="text-sm text-base-content/60 mt-1">
+                                                        Price per {product.price.unit}
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
 
@@ -845,16 +851,8 @@ const ProductDetailPage = () => {
                                     </div>                                    
                                     {/* Action Buttons */}
                                     <div className="pt-4 space-y-4">
-                                        {product.price?.contactForPrice ? (
-                                            <button 
-                                                onClick={() => setShowInquiryForm(true)} 
-                                                className="btn btn-primary w-full gap-2 hover:shadow-lg transition-shadow"
-                                            >
-                                                <Mail size={18} />
-                                                Contact for Pricing
-                                            </button>
-                                        ) : (
-                                            <button 
+                                        {!(product.price?.contactForPrice || !product.price?.minValue) && (
+                                            <button
                                                 onClick={() => setShowInquiryForm(true)}
                                                 className="btn btn-primary w-full gap-2 hover:shadow-lg transition-shadow"
                                             >
@@ -862,7 +860,7 @@ const ProductDetailPage = () => {
                                                 Request Quote
                                             </button>
                                         )}
-                                        
+
                                         <div className="grid grid-cols-2 gap-3">
                                             <button className="btn btn-outline gap-2 hover:shadow-md transition-shadow">
                                                 <Star size={16} />

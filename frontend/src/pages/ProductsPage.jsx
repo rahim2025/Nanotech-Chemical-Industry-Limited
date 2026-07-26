@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
 import SEO from "../components/SEO";
-import { Plus, Edit, Trash2, Package, MessageCircle, Search, Mail } from "lucide-react";
+import { Plus, Edit, Trash2, Package, MessageCircle, Search } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
-import ProductInquiryForm from "../components/ProductInquiryForm";
+import ContactPricingInfo from "../components/ContactPricingInfo";
 import toast from "react-hot-toast";
 
 const ProductsPage = () => {
@@ -15,8 +15,7 @@ const ProductsPage = () => {
     const [editingProduct, setEditingProduct] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [showInquiryForm, setShowInquiryForm] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);useEffect(() => {
+useEffect(() => {
         getAllProducts();
     }, [getAllProducts]);
 
@@ -270,18 +269,7 @@ const ProductsPage = () => {
                                     <div className="mt-1 p-1.5 bg-base-200/50 rounded-lg border border-base-300/50">
                                         <div className="text-[9px] text-base-content/60 uppercase tracking-wide mb-0.5 font-medium">Price</div>
                                         {product.price?.contactForPrice || !product.price?.minValue ? (
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    setSelectedProduct(product);
-                                                    setShowInquiryForm(true);
-                                                }}
-                                                className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                                            >
-                                                <Mail size={10} className="inline-block" />
-                                                Contact for pricing
-                                            </button>
+                                            <ContactPricingInfo compact />
                                         ) : (
                                             <div className="text-xs font-bold text-primary">
                                                 {formatPrice(product.price)}
@@ -353,35 +341,6 @@ const ProductsPage = () => {
                     </div>
                 )}
 
-                {/* Product Inquiry Modal */}
-                {showInquiryForm && selectedProduct && (
-                    <div className="modal modal-open">
-                        <div className="modal-box max-w-md">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-bold text-lg">Contact for Pricing</h3>
-                                <button
-                                    onClick={() => {
-                                        setShowInquiryForm(false);
-                                        setSelectedProduct(null);
-                                    }}
-                                    className="btn btn-sm btn-circle btn-ghost"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                            <p className="text-sm text-base-content/70 mb-4">
-                                Please fill out the form below to get pricing information for {selectedProduct.name}.
-                            </p>
-                            <ProductInquiryForm 
-                                product={selectedProduct}
-                                onClose={() => {
-                                    setShowInquiryForm(false);
-                                    setSelectedProduct(null);
-                                }}
-                            />
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
         </>
