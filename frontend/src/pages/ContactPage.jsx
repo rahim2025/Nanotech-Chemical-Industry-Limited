@@ -11,6 +11,7 @@ import {
   Globe,
   MessageCircle
 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import useContactStore from '../store/useContactStore';
 
@@ -23,6 +24,18 @@ const ContactPage = () => {
     subject: '',
     message: ''
   });
+  const [activeOffice, setActiveOffice] = useState('guangzhou');
+
+  const officeLocations = {
+    guangzhou: {
+      label: 'Guangzhou Office',
+      address: 'RM. 502, No.-2 Building, Shanxi Tower, No.-5 Yaoquan Street, Yuexiu District, Guangzhou City, China'
+    },
+    hongkong: {
+      label: 'Hong Kong Office',
+      address: 'Room-1503-09, 15/F, Causeway Bay Centre, 15-23 Sugar Street, Causeway Bay, Hong Kong'
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -71,16 +84,23 @@ const ContactPage = () => {
       icon: <Phone className="w-6 h-6" />,
       title: "Phone Numbers",
       details: [
-        "Cell: +86 13250517650",
-        "Tel: 020-29041125",
-        "Fax: 020-28250127"
+        { text: "Mobile & WhatsApp (Hongkong): +852 6141-5689", href: "https://wa.me/85261415689", icon: <FaWhatsapp className="w-4 h-4 text-green-500 shrink-0" /> },
+        { text: "Mobile & WhatsApp (China): +86 132 5051 7650", href: "https://wa.me/8613250517650", icon: <FaWhatsapp className="w-4 h-4 text-green-500 shrink-0" /> },
+        {
+          row: [
+            { text: "Tel: 020-2904 1125", href: "tel:+862029041125" },
+            { text: "Fax: 020-2825 0127" }
+          ]
+        }
       ]
     },    {
       icon: <Mail className="w-6 h-6" />,
       title: "Email & Website",
       details: [
-        "info@nanotechchemical.com",
-        "www.nanotechchemical.com"
+        { text: "nanotechcil@gmail.com", href: "mailto:nanotechcil@gmail.com" },
+        { text: "nanotechdyechem@gmail.com", href: "mailto:nanotechdyechem@gmail.com" },
+        { text: "nanotechpurchase@gmail.com", href: "mailto:nanotechpurchase@gmail.com" },
+        { text: "www.nanotechchemical.com", href: "https://www.nanotechchemical.com" }
       ]
     },
     {
@@ -152,11 +172,49 @@ const ContactPage = () => {
                       {info.title}
                     </h3>
                     <div className="space-y-1">
-                      {info.details.map((detail, i) => (
-                        <p key={i} className="text-gray-600">
-                          {detail}
-                        </p>
-                      ))}
+                      {info.details.map((detail, i) => {
+                        if (typeof detail === 'string') {
+                          return (
+                            <p key={i} className="text-gray-600">
+                              {detail}
+                            </p>
+                          );
+                        }
+
+                        if (detail.row) {
+                          return (
+                            <p key={i} className="text-gray-600 flex flex-wrap items-center gap-2">
+                              {detail.row.map((segment, j) => (
+                                <span key={j} className="flex items-center gap-2">
+                                  {j > 0 && <span className="text-gray-400">|</span>}
+                                  {segment.href ? (
+                                    <a href={segment.href} className="hover:text-blue-600 hover:underline">
+                                      {segment.text}
+                                    </a>
+                                  ) : (
+                                    <span>{segment.text}</span>
+                                  )}
+                                </span>
+                              ))}
+                            </p>
+                          );
+                        }
+
+                        const isExternal = detail.href?.startsWith('http');
+                        return (
+                          <p key={i} className="text-gray-600">
+                            <a
+                              href={detail.href}
+                              target={isExternal ? '_blank' : undefined}
+                              rel={isExternal ? 'noopener noreferrer' : undefined}
+                              className="inline-flex items-center gap-1.5 hover:text-blue-600 hover:underline"
+                            >
+                              {detail.icon}
+                              {detail.text}
+                            </a>
+                          </p>
+                        );
+                      })}
                     </div>
                   </div>
                 </motion.div>
@@ -311,19 +369,36 @@ const ContactPage = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-16"
         >          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Find Us</h2>
-          <div className="bg-white rounded-xl shadow-lg p-4 h-96">
-            <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">Interactive map would be integrated here</p>
-                <div className="text-sm text-gray-400 mt-4 space-y-2">
-                  <p className="font-medium">Guangzhou Office:</p>
-                  <p>RM. 502, No.-2 Building, Shanxi Tower, No.-5 Yaoquan Street, Yuexiu District, Guangzhou City, China</p>
-                  <p className="font-medium mt-3">Hong Kong Office:</p>
-                  <p>Room-1503-09, 15/F, Causeway Bay Centre, 15-23 Sugar Street, Causeway Bay, Hong Kong</p>
-                </div>
-              </div>
+          <div className="bg-white rounded-xl shadow-lg p-4">
+            <div className="flex flex-wrap justify-center gap-3 mb-4">
+              {Object.entries(officeLocations).map(([key, office]) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveOffice(key)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    activeOffice === key
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <MapPin className="w-4 h-4" />
+                  {office.label}
+                </button>
+              ))}
             </div>
+            <div className="w-full h-96 rounded-lg overflow-hidden">
+              <iframe
+                key={activeOffice}
+                title={officeLocations[activeOffice].label}
+                className="w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps?q=${encodeURIComponent(officeLocations[activeOffice].address)}&output=embed`}
+              />
+            </div>
+            <p className="text-sm text-gray-500 mt-4 text-center">
+              {officeLocations[activeOffice].address}
+            </p>
           </div>
         </motion.div>      </div>
     </div>

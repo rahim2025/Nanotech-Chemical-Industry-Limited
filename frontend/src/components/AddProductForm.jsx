@@ -374,7 +374,7 @@ const AddProductForm = ({ product, onSuccess, onCancel }) => {
                     {formData.price.contactForPrice && (
                         <div className="alert alert-info">
                             <div className="text-sm">
-                                Price will be displayed as "Contact for pricing"
+                                Instead of a price, customers will see our WhatsApp and email contact details
                             </div>
                         </div>
                     )}
