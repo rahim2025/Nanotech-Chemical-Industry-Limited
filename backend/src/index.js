@@ -21,6 +21,7 @@ import careerRouter from "./routers/career.router.js"
 import jobApplicationRouter from "./routers/jobApplication.router.js"
 import contactRouter from "./routers/contact.router.js"
 import {connectDB} from "./lib/db.js"
+import Product from "./models/product.model.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -167,6 +168,44 @@ app.use("/api/notifications",notificationRouter)
 app.use("/api/careers",careerRouter)
 app.use("/api/job-applications",jobApplicationRouter)
 app.use("/api/contact",contactRouter)
+
+// Dynamic sitemap — includes every product currently in the database so
+// search engines can discover and index product pages directly, instead of
+// only finding them by crawling links from the homepage.
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const baseUrl = "https://nanotechchemical.com";
+        const today = new Date().toISOString().split('T')[0];
+
+        const staticPages = [
+            { loc: `${baseUrl}/`, lastmod: today, changefreq: "weekly", priority: "1.0" },
+            { loc: `${baseUrl}/about`, lastmod: today, changefreq: "monthly", priority: "0.8" },
+            { loc: `${baseUrl}/contact`, lastmod: today, changefreq: "monthly", priority: "0.7" },
+            { loc: `${baseUrl}/careers`, lastmod: today, changefreq: "weekly", priority: "0.6" },
+        ];
+
+        const products = await Product.find({}, "_id updatedAt").lean();
+
+        const productPages = products.map((product) => ({
+            loc: `${baseUrl}/products/${product._id}`,
+            lastmod: new Date(product.updatedAt).toISOString().split('T')[0],
+            changefreq: "weekly",
+            priority: "0.7",
+        }));
+
+        const urlEntries = [...staticPages, ...productPages]
+            .map((page) => `  <url>\n    <loc>${page.loc}</loc>\n    <lastmod>${page.lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`)
+            .join('\n');
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlEntries}\n</urlset>`;
+
+        res.header('Content-Type', 'application/xml');
+        res.send(xml);
+    } catch (error) {
+        console.error("Error generating sitemap:", error);
+        res.status(500).send("Error generating sitemap");
+    }
+});
 
 // Global error handler that preserves CORS headers
 app.use((err, req, res, next) => {
