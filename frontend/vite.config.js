@@ -14,8 +14,8 @@ export default defineConfig({
       manifest: {
         name: 'Nanotech Chemical Industry Limited',
         short_name: 'Nanotech Chemical',
-        description: 'Leading manufacturer and supplier of high-quality chemicals and industrial solutions in Bangladesh.',
-        theme_color: '#1a73e8',
+        description: 'Family-owned international sourcing and trading company since the 1930s, connecting reliable manufacturers in Mainland China with global customers in chemicals, textiles, and home living products.',
+        theme_color: '#0d47a1',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',

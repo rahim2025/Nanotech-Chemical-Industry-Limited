@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 import { useAuthStore } from "../store/useAuthStore";
-import SEO from "../components/SEO";
+import SEO from "../components/SEONative";
 import { Plus, Edit, Trash2, Package, MessageCircle, Search } from "lucide-react";
 import AddProductForm from "../components/AddProductForm";
 import ContactPricingInfo from "../components/ContactPricingInfo";
@@ -107,11 +107,21 @@ useEffect(() => {
 
     return (
         <>
-            <SEO 
-                title="Industrial & Research Chemicals - Products"
-                description="Explore our comprehensive range of high-quality industrial chemicals, research chemicals, and custom chemical solutions. Premium chemical products for various industries."
-                keywords="industrial chemicals, research chemicals, chemical products, chemical solutions, laboratory chemicals, bulk chemicals, specialty chemicals"
-                url="https://nanotechchemical.com/products"
+            <SEO
+                title="Chemical, Textile & Home Living Products - Sourced Since the 1930s"
+                description="Browse our catalog of industrial chemicals, textile chemicals & auxiliaries, dyes & pigments, fibers, fabrics, garments, and home living products, sourced through our trusted manufacturing network across Mainland China."
+                keywords="industrial chemicals, textile chemicals, dyes and pigments, fibers yarns fabrics, ready-made garments, home textiles, chemical sourcing catalog, China manufacturer network"
+                url="https://nanotechchemical.com/"
+                schemaData={products?.length ? {
+                    "@context": "https://schema.org",
+                    "@type": "ItemList",
+                    "itemListElement": products.slice(0, 30).map((p, index) => ({
+                        "@type": "ListItem",
+                        "position": index + 1,
+                        "url": `https://nanotechchemical.com/products/${p._id}`,
+                        "name": p.name
+                    }))
+                } : null}
             />
             <div className="min-h-screen bg-base-200 pt-20">
             <div className="container mx-auto px-4">

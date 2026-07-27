@@ -42,6 +42,7 @@ import CommentForm from "../components/CommentForm";
 import CommentItem from "../components/CommentItem";
 import ProductInquiryForm from "../components/ProductInquiryForm";
 import ContactPricingInfo from "../components/ContactPricingInfo";
+import SEO from "../components/SEONative";
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
@@ -629,7 +630,46 @@ const ProductDetailPage = () => {
                 </div>
             </div>
         );
-    }    return (
+    }
+
+    const canonicalUrl = `https://nanotechchemical.com/products/${product._id}`;
+    const metaDescription = product.description
+        ? (product.description.length > 155 ? `${product.description.slice(0, 155).trim()}…` : product.description)
+        : `${product.name} sourced by Nanotech Chemical Industry Limited, a trusted sourcing and trading company since the 1930s.`;
+    const hasFixedPrice = !product.price?.contactForPrice && product.price?.minValue != null;
+
+    const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": metaDescription,
+        "url": canonicalUrl,
+        ...(product.photo ? { "image": [product.photo] } : {}),
+        ...(product.category ? { "category": product.category } : {}),
+        "brand": { "@type": "Brand", "name": "Nanotech Chemical Industry Limited" },
+        ...(hasFixedPrice ? {
+            "offers": {
+                "@type": "Offer",
+                "url": canonicalUrl,
+                "priceCurrency": product.price.currency || "USD",
+                "price": product.price.minValue,
+                "availability": "https://schema.org/InStock",
+                "seller": { "@type": "Organization", "name": "Nanotech Chemical Industry Limited" }
+            }
+        } : {})
+    };
+
+    return (
+        <>
+        <SEO
+            title={`${product.name} - Nanotech Chemical Industry Limited`}
+            description={metaDescription}
+            keywords={`${product.name}, ${product.category || 'chemical products'}, nanotech chemical, chemical sourcing`}
+            url={canonicalUrl}
+            type="product"
+            image={product.photo || undefined}
+            schemaData={productSchema}
+        />
         <div className="min-h-screen bg-base-200 pt-20">
             <div className="container mx-auto px-4 pb-16">
                 <div className="max-w-6xl mx-auto" ref={contentRef}>
@@ -1380,6 +1420,7 @@ const ProductDetailPage = () => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

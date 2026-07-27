@@ -1,5 +1,5 @@
 import ProductCarousel from '../components/ProductCarousel';
-import SEO from '../components/SEO';
+import SEO from '../components/SEONative';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

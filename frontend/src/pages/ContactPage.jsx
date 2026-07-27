@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import SEO from '../components/SEO';
+import SEO from '../components/SEONative';
 import { 
   MapPin, 
   Phone, 
@@ -24,19 +24,6 @@ const ContactPage = () => {
     subject: '',
     message: ''
   });
-  const [activeOffice, setActiveOffice] = useState('guangzhou');
-
-  const officeLocations = {
-    guangzhou: {
-      label: 'Guangzhou Office',
-      address: 'RM. 502, No.-2 Building, Shanxi Tower, No.-5 Yaoquan Street, Yuexiu District, Guangzhou City, China'
-    },
-    hongkong: {
-      label: 'Hong Kong Office',
-      address: 'Room-1503-09, 15/F, Causeway Bay Centre, 15-23 Sugar Street, Causeway Bay, Hong Kong'
-    }
-  };
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -116,11 +103,51 @@ const ContactPage = () => {
 
   return (
     <>
-      <SEO 
-        title="Contact Us - Get in Touch"
-        description="Contact Nanotech Chemical Industry Limited. Reach our offices in Guangzhou and Hong Kong. Get quotes, technical support, and product information."
-        keywords="contact nanotech chemical, chemical company contact, Guangzhou office, Hong Kong office, chemical supplier contact"
+      <SEO
+        title="Contact Us - WhatsApp, Phone & Office Locations"
+        description="Get in touch with Nanotech Chemical Industry Limited. Reach our Guangzhou and Hong Kong offices by WhatsApp, phone, or email for quotes, technical support, and product information."
+        keywords="contact nanotech chemical, chemical sourcing company contact, Guangzhou office, Hong Kong office, WhatsApp chemical supplier"
         url="https://nanotechchemical.com/contact"
+        schemaData={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Contact Nanotech Chemical Industry Limited",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nanotechchemical.com/" },
+              { "@type": "ListItem", "position": 2, "name": "Contact Us", "item": "https://nanotechchemical.com/contact" }
+            ]
+          },
+          "mainEntity": {
+            "@type": "Organization",
+            "name": "Nanotech Chemical Industry Limited",
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "telephone": "+852-6141-5689",
+                "contactType": "sales",
+                "contactOption": "WhatsApp",
+                "areaServed": "HK"
+              },
+              {
+                "@type": "ContactPoint",
+                "telephone": "+86-132-5051-7650",
+                "contactType": "sales",
+                "contactOption": "WhatsApp",
+                "areaServed": "CN"
+              },
+              {
+                "@type": "ContactPoint",
+                "telephone": "+86-20-2904-1125",
+                "faxNumber": "+86-20-2825-0127",
+                "contactType": "customer service",
+                "areaServed": "CN"
+              }
+            ],
+            "email": "nanotechcil@gmail.com"
+          }
+        }}
       />
       <div className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
@@ -362,45 +389,7 @@ const ContactPage = () => {
           </motion.div>
         </div>
 
-        {/* Map Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-16"
-        >          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Find Us</h2>
-          <div className="bg-white rounded-xl shadow-lg p-4">
-            <div className="flex flex-wrap justify-center gap-3 mb-4">
-              {Object.entries(officeLocations).map(([key, office]) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveOffice(key)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    activeOffice === key
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <MapPin className="w-4 h-4" />
-                  {office.label}
-                </button>
-              ))}
-            </div>
-            <div className="w-full h-96 rounded-lg overflow-hidden">
-              <iframe
-                key={activeOffice}
-                title={officeLocations[activeOffice].label}
-                className="w-full h-full border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(officeLocations[activeOffice].address)}&output=embed`}
-              />
-            </div>
-            <p className="text-sm text-gray-500 mt-4 text-center">
-              {officeLocations[activeOffice].address}
-            </p>
-          </div>
-        </motion.div>      </div>
+      </div>
     </div>
     </>
   );

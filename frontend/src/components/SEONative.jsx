@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-const SEONative = ({ 
-  title = "Nanotech Chemical Industry Limited - Leading Chemical Manufacturing Company",
-  description = "Nanotech Chemical Industry Limited is a premier chemical manufacturing company specializing in high-quality industrial chemicals, research chemicals, and custom chemical solutions. Located in Guangzhou and Hong Kong.",
-  keywords = "chemical manufacturing, industrial chemicals, research chemicals, nanotech chemicals, chemical solutions, Guangzhou chemicals, Hong Kong chemicals, chemical industry, chemical products",
+const SEONative = ({
+  title = "Nanotech Chemical Industry Limited - Since the 1930s, Three Generations of Trusted Sourcing",
+  description = "Nanotech Chemical Industry Limited is a family-owned international sourcing and trading company with a legacy dating back to the 1930s, connecting reliable manufacturers with global customers in chemicals, textiles, fashion, and home living products.",
+  keywords = "chemical sourcing company, textile chemicals supplier, dyes and pigments supplier, industrial chemicals sourcing, Guangzhou sourcing agent, Hong Kong trading company, textile auxiliaries supplier, garment sourcing, home textile supplier",
   image = "https://nanotechchemical.com/logo-og.png",
   url = "https://nanotechchemical.com/",
   type = "website",

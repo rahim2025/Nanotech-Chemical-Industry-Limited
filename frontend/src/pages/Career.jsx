@@ -2,6 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt, FaClock, FaUsers, FaDollarSign, FaCalendarAlt, FaChevronDown, FaChevronUp, FaEnvelope } from 'react-icons/fa';
 import useCareerStore from '../store/useCareerStore';
+import SEO from '../components/SEONative';
+
+const EMPLOYMENT_TYPE_MAP = {
+    'full-time': 'FULL_TIME',
+    'part-time': 'PART_TIME',
+    'contract': 'CONTRACTOR',
+    'contractor': 'CONTRACTOR',
+    'temporary': 'TEMPORARY',
+    'intern': 'INTERN',
+    'internship': 'INTERN',
+    'volunteer': 'VOLUNTEER'
+};
+
+const toEmploymentType = (jobType) => EMPLOYMENT_TYPE_MAP[jobType?.toLowerCase().trim()] || 'OTHER';
 
 const Career = () => {
     const { careers, isLoading, fetchCareers } = useCareerStore();
@@ -41,6 +55,47 @@ const Career = () => {
     }
 
     return (
+        <>
+        <SEO
+            title="Careers - Join Our Team"
+            description="Explore career opportunities at Nanotech Chemical Industry Limited, a family-owned international sourcing and trading company with a legacy dating back to the 1930s, based in Guangzhou and Hong Kong."
+            keywords="nanotech chemical careers, chemical industry jobs, textile trading careers, Guangzhou jobs, Hong Kong jobs, sourcing company careers"
+            url="https://nanotechchemical.com/careers"
+            schemaData={{
+                "@context": "https://schema.org",
+                "@graph": [
+                    {
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://nanotechchemical.com/" },
+                            { "@type": "ListItem", "position": 2, "name": "Careers", "item": "https://nanotechchemical.com/careers" }
+                        ]
+                    },
+                    ...careers
+                        .filter((career) => !isDeadlinePassed(career.applicationDeadline))
+                        .map((career) => ({
+                            "@type": "JobPosting",
+                            "title": career.title,
+                            "description": career.description,
+                            "datePosted": career.createdAt,
+                            ...(career.applicationDeadline ? { "validThrough": career.applicationDeadline } : {}),
+                            "employmentType": toEmploymentType(career.jobType),
+                            "hiringOrganization": {
+                                "@type": "Organization",
+                                "name": "Nanotech Chemical Industry Limited",
+                                "sameAs": "https://nanotechchemical.com"
+                            },
+                            "jobLocation": {
+                                "@type": "Place",
+                                "address": {
+                                    "@type": "PostalAddress",
+                                    "addressLocality": career.location || "Guangzhou"
+                                }
+                            }
+                        }))
+                ]
+            }}
+        />
         <div className="min-h-screen bg-gray-50 pt-20">
             {/* Hero Section */}
             <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
@@ -216,6 +271,7 @@ const Career = () => {
                     </div>                )}
             </section>
         </div>
+        </>
     );
 };
 

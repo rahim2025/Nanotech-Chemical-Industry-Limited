@@ -32,7 +32,7 @@ export const Navbar = () => {
                   className="w-full h-full object-cover object-center"
                 />
               </div>
-              <h1 className="text-base sm:text-lg font-bold truncate">NANOTECH CHEMICAL</h1>
+              <span className="text-base sm:text-lg font-bold truncate">NANOTECH CHEMICAL</span>
             </Link>              
             {/* Always visible navigation */}            
             <nav className="hidden md:flex items-center gap-4">
